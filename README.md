@@ -72,5 +72,5 @@ It will appear beautifully on your GitHub repo page 🌈
   <img src="public/img/ssshome.png" width="800" alt="Home Page" />
   <img src="public/img/sssartikel.png" width="800" alt="Article List" />
   <img src="public/img/sssadmin.png" width="800" alt="Admin Dashboard" />
-  <img src="public/img/sssadarkmode-ar.png" width="800" alt="Light Mode & AR Language" />
+  <img src="public/img/sssdarkmode-ar.png" width="800" alt="Light Mode & AR Language" />
 </p>
