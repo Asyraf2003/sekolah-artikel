@@ -1,18 +1,23 @@
 # ==============================================================
-# 🌐 School with Article — Laravel 12
+# ✨ SCHOOL WITH ARTICLE — Laravel 12 ✨
 # ==============================================================
-# A modern school & article management system built with Laravel 12,
-# TailwindCSS, Vite, and MySQL. This guide shows how to install,
-# configure, and run the project from GitHub to local server.
+# 🚀 A modern school & article management system
+# 🧱 Built with Laravel 12, TailwindCSS, Vite & MySQL
+# 💻 Author: Asyraf — https://github.com/Asyraf2003
+# ⭐ Repo: https://github.com/Asyraf2003/school-with-article
+# 🖼️ Preview image: public/img/preview.png
+# License: MIT
 # ==============================================================
-# 🧩 Tech Stack
+
+# 🧩 TECH STACK
 # --------------------------------------------------------------
-# - PHP 8.2+ & Laravel 12
-# - MySQL / MariaDB
-# - TailwindCSS + Vite
-# - Composer & npm
+# ⚙️  PHP 8.2+ & Laravel 12
+# 🗄️  MySQL / MariaDB
+# 🎨  TailwindCSS + Vite
+# 📦  Composer & npm
+
 # ==============================================================
-# 📦 Quick Setup
+# ⚡ QUICK INSTALLATION
 # --------------------------------------------------------------
 git clone https://github.com/Asyraf2003/school-with-article.git
 cd school-with-article
@@ -20,18 +25,17 @@ composer install
 cp .env.example .env
 php artisan key:generate
 
-# --- Configure Database (.env) ---
+# --- ⚙️ DATABASE CONFIG (.env) ---
 # DB_CONNECTION=mysql
 # DB_HOST=127.0.0.1
 # DB_PORT=3306
 # DB_DATABASE=school_db
 # DB_USERNAME=root
 # DB_PASSWORD=
-
-# Create database:
+# 💡 Create DB manually:
 # mysql -u root -p -e "CREATE DATABASE school_db;"
 
-# --- (Optional) Mail Setup (.env) ---
+# --- ✉️ MAIL SETUP (.env) ---
 # MAIL_MAILER=smtp
 # MAIL_HOST=smtp.gmail.com
 # MAIL_PORT=587
@@ -40,6 +44,7 @@ php artisan key:generate
 # MAIL_ENCRYPTION=tls
 # MAIL_FROM_ADDRESS="email@example.com"
 # MAIL_FROM_NAME="${APP_NAME}"
+# 💬 Tip: use Gmail “App Password” if 2FA enabled.
 
 php artisan migrate --seed
 php artisan storage:link
@@ -48,22 +53,24 @@ php artisan serve
 
 # ✅ Access: http://127.0.0.1:8000
 # ==============================================================
-# ⚙️ Common Commands
+# 🧠 USEFUL COMMANDS
 # --------------------------------------------------------------
-# php artisan serve           → Run dev server
-# npm run dev                 → Hot reload assets
-# php artisan migrate:fresh   → Reset DB
-# php artisan optimize:clear  → Clear cache
+# ▶ php artisan serve          → start dev server
+# ▶ npm run dev                → hot reload frontend
+# ▶ php artisan migrate:fresh  → reset database
+# ▶ php artisan optimize:clear → clear cache
+
 # ==============================================================
-# 🩵 Troubleshooting
+# 🩵 TROUBLESHOOTING
 # --------------------------------------------------------------
-# ❗ Blank Page → php artisan optimize:clear
-# ❗ DB Error → Check .env & run MySQL service
-# ❗ CSS/JS Missing → npm run dev or npm run build
-# ❗ Mail Error → Use Gmail App Password (2FA)
+# ❗ Blank page → php artisan optimize:clear
+# ❗ DB error   → check .env & MySQL service
+# ❗ CSS/JS     → npm run dev or npm run build
+# ❗ Mail error → verify Gmail App Password / SMTP
 # ==============================================================
-# 👨‍💻 Author: Asyraf (https://github.com/Asyraf2003)
-# ⭐ Repo: https://github.com/Asyraf2003/school-with-article
-# 🖼️ Preview: public/img/preview.png
-# License: MIT
+
+# 🧠 PRO TIP:
+# Add a banner or dashboard screenshot at:
+#   public/img/preview.png
+# It will appear beautifully on your GitHub repo page 🌈
 # ==============================================================
