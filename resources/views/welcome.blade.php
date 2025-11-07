@@ -608,13 +608,13 @@
         </div>
 
         <div class="w-full h-80 lg:h-full rounded-2xl overflow-hidden shadow-xl border border-gray-200 dark:border-gray-800">
-          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3951.392599291162!2d112.62112117555814!3d-7.9583173920663155!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd629d615f95c25%3A0xb8e33f7ffdee9560!2sTPA%2C%20TPQ%2C%20KB%2C%20TK%20Al%20Mustaqbal!5e0!3m2!1sen!2sid!4v1758036205480!5m2!1sen!2sid" 
+          <iframe src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d185314.35388272713!2d108.43323400519355!3d-7.691291314698171!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sJl.%20Raya%20Cileungsi%20No.KM%202%2C%20RT.002%2FRW.008%2C%20Cileungsi%2C%20Kec.%20Cileungsi%2C%20Kabupaten%20Bogor%2C%20Jawa%20Barat%2016820!5e0!3m2!1sen!2sid!4v1762492621631!5m2!1sen!2sid"
             width="100%"
             height="100%"
             style="border:0;"
             allowfullscreen=""
             loading="lazy"
-            title="Lokasi Al-Mustaqbal di Google Maps"
+            title="Lokasi Sekolah di Peta"
             referrerpolicy="no-referrer-when-downgrade">
           </iframe>
         </div>

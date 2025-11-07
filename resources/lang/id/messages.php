@@ -2,8 +2,8 @@
 
 return [
     # Titel Halaman Utama
-    'welcome_title' => 'Selamat Datang di Al-Mustaqbal',
-    'default_page_title' => 'Al-Mustaqbal',
+    'welcome_title' => 'Selamat Datang di Al-Fashlah Islamic School',
+    'default_page_title' => 'Al-Fashlah Islamic School',
     'default_page_description' => 'Selamat Datang di Website Sekolah',
     'default_page_description2' => 'Mencetak generasi berkarakter, berprestasi, dan berwawasan global. Informasi akademik, kegiatan, dan PPDB dalam satu tempat.',
     'default_page_artikel' => 'Lihat Artikel',
@@ -57,7 +57,7 @@ return [
     'about_title' => 'Tentang',
     'about_paragraph1' => 'Misi & Visi Kami: Meraih Masa Depan Lebih Baik',
     'about_vision_title' => 'Visi',
-    'about_vision_content' => 'Program Pendidikan Al-Mustaqbal bertujuan untuk membina generasi <span class="yellow-text">Muslim</span> yang memiliki karakter <span class="yellow-text">menginspirasi</span>, <span class="yellow-text">inovatif</span>, dan <span class="yellow-text">berintegritas</span>, mampu menjalankan peran mereka sebagai <span class="bold-text">\'Khalifatullah\'</span> melalui pengembangan pendidikan <span class="yellow-text">holistik</span>.',
+    'about_vision_content' => 'Program Pendidikan Al-Fashlah Islamic School bertujuan untuk membina generasi <span class="yellow-text">Muslim</span> yang memiliki karakter <span class="yellow-text">menginspirasi</span>, <span class="yellow-text">inovatif</span>, dan <span class="yellow-text">berintegritas</span>, mampu menjalankan peran mereka sebagai <span class="bold-text">\'Khalifatullah\'</span> melalui pengembangan pendidikan <span class="yellow-text">holistik</span>.',
     'about_mission_title' => 'Misi',
     'about_mission_item1' => 'Membentuk generasi Islam berdasarkan Al-Qur’an dan Sunnah Rasulullah SAW.',
     'about_mission_item2' => 'Mengembangkan semangat inspirasi dengan wawasan global dan kemampuan berkomunikasi secara sosial, melalui penguasaan lebih dari satu bahasa.',
@@ -119,9 +119,9 @@ return [
     'contact_title' => 'Kontak',
     'contact_description' => 'Hubungi Kami',
     'contact_address' => 'Alamat',
-    'contact_address_content' => 'Jl. Mayjend Panjaitan No.19, Penanggungan, Kec. Klojen, Kota Malang, Jawa Timur 65113',
-    'contact_phone_content' => '+62 889-9112-8060',
-    'contact_email_content' => 'almustaqbal010@gmail.com',
+    'contact_address_content' => 'Jl. Raya Cileungsi No.KM 2, RT.002/RW.008, Cileungsi, Kec. Cileungsi, Kabupaten Bogor, Jawa Barat 16820',
+    'contact_phone_content' => '+62 812-3456-7890',
+    'contact_email_content' => 'example@gmail.com',
 
     # Konten Halaman Footer
     'footer_page' => 'Ikuti Kami',
