@@ -18,6 +18,10 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/app
+/storage/framework
+/storage/logs
+/storage/vite.hot
 /vendor
 Homestead.json
 Homestead.yaml
