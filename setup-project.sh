@@ -18,17 +18,15 @@ if [ ! -f .env ]; then
     cp .env.example .env
 fi
 
-# Fix permission so container can edit it
 chmod 664 .env
 
 
 ########################################
-# 3. Start Docker stack FIRST (important)
+# 3. Start Docker stack FIRST
 ########################################
 echo "[*] Starting Docker containers..."
 docker compose up -d --build
 
-# Wait for containers to settle
 sleep 2
 
 
@@ -40,17 +38,15 @@ sudo chmod -R 777 storage bootstrap/cache || true
 
 
 ########################################
-# 4.5. waiting containers ready
+# 4.5 Wait containers ready
 ########################################
 echo "[*] Waiting for containers to be fully ready..."
 
-# Wait for PHP-FPM inside app container
 until docker exec school-app sh -c "php -v" >/dev/null 2>&1; do
     echo "    - Waiting for school-app..."
     sleep 2
 done
 
-# Wait for Node container
 until docker exec school-node sh -c "node -v" >/dev/null 2>&1; do
     echo "    - Waiting for school-node..."
     sleep 2
@@ -60,34 +56,44 @@ echo "[*] All containers ready."
 
 
 ########################################
-# 5. Install Composer dependencies
+# 5. Composer install
 ########################################
 echo "[*] Installing Composer dependencies..."
 docker exec -it school-app composer install --no-interaction --prefer-dist
 
 
 ########################################
-# 6. Generate Laravel APP_KEY (safe)
+# 6. Generate Laravel APP_KEY
 ########################################
 echo "[*] Generating Laravel APP_KEY..."
 docker exec -it school-app php artisan key:generate --force
 
 
 ########################################
-# 7. Run DB migrations
+# 7. Migrate DB
 ########################################
 echo "[*] Running database migrations..."
 docker exec -it school-app php artisan migrate --force || true
 
+
 ########################################
-# 7.5. Run seeders (optional but recommended)
+# 7.5 Seeders
 ########################################
 echo "[*] Running database seeders..."
 docker exec -it school-app php artisan db:seed --force || true
 
 
 ########################################
-# 8. Install & Build frontend assets
+# 7.7 Storage Symlink (PENTING)
+########################################
+echo "[*] Creating Laravel storage symlink..."
+docker exec -it school-app php artisan storage:link || true
+
+sudo chmod -R 777 storage public/storage || true
+
+
+########################################
+# 8. Frontend build
 ########################################
 echo "[*] Installing Node dependencies..."
 docker exec -it school-node npm install
@@ -95,7 +101,6 @@ docker exec -it school-node npm install
 echo "[*] Building front-end assets..."
 docker exec -it school-node npm run build
 
-# Remove hot file (prevent nginx confusion)
 rm -f storage/vite.hot
 
 
