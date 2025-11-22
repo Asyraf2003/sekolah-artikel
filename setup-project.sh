@@ -79,6 +79,12 @@ docker exec -it school-app php artisan key:generate --force
 echo "[*] Running database migrations..."
 docker exec -it school-app php artisan migrate --force || true
 
+########################################
+# 7.5. Run seeders (optional but recommended)
+########################################
+echo "[*] Running database seeders..."
+docker exec -it school-app php artisan db:seed --force || true
+
 
 ########################################
 # 8. Install & Build frontend assets
