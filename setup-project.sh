@@ -40,6 +40,26 @@ sudo chmod -R 777 storage bootstrap/cache || true
 
 
 ########################################
+# 4.5. waiting containers ready
+########################################
+echo "[*] Waiting for containers to be fully ready..."
+
+# Wait for PHP-FPM inside app container
+until docker exec school-app sh -c "php -v" >/dev/null 2>&1; do
+    echo "    - Waiting for school-app..."
+    sleep 2
+done
+
+# Wait for Node container
+until docker exec school-node sh -c "node -v" >/dev/null 2>&1; do
+    echo "    - Waiting for school-node..."
+    sleep 2
+done
+
+echo "[*] All containers ready."
+
+
+########################################
 # 5. Install Composer dependencies
 ########################################
 echo "[*] Installing Composer dependencies..."
