@@ -2,8 +2,8 @@
 
 return [
     # Titel Halaman Utama
-    'welcome_title' => 'Welcome to Al-Fashlah Islamic School',
-    'default_page_title' => 'Al-Fashlah Islamic School',
+    'welcome_title' => 'Welcome to Islamic School',
+    'default_page_title' => 'Islamic School',
     'default_page_description' => 'Welcome to the School Website',
     'default_page_description2' => 'Creating a generation of character, achievement, and global insight. Academic information, activities, and new student admission (PPDB) in one place.',
     'default_page_artikel' => 'View Articles',
@@ -57,7 +57,7 @@ return [
     'about_title' => 'About',
     'about_paragraph1' => 'Our Mission & Vision: Achieving a Better Future',
     'about_vision_title' => 'Vision',
-    'about_vision_content' => 'Al-Fashlah Islamic School’s Education Program aims to foster a <span class="yellow-text">Muslim</span> generation with an <span class="yellow-text">inspiring</span>, <span class="yellow-text">innovative</span>, and <span class="yellow-text">integrated</span> character, capable of carrying out their role as <span class="bold-text">\'Khalifatullah\'</span> through <span class="yellow-text">holistic</span> education development.',
+    'about_vision_content' => 'Islamic School’s Education Program aims to foster a <span class="yellow-text">Muslim</span> generation with an <span class="yellow-text">inspiring</span>, <span class="yellow-text">innovative</span>, and <span class="yellow-text">integrated</span> character, capable of carrying out their role as <span class="bold-text">\'Khalifatullah\'</span> through <span class="yellow-text">holistic</span> education development.',
     'about_mission_title' => 'Mission',
     'about_mission_item1' => 'Building an Islamic generation based on the Qur’an and the Sunnah of Rasulullah SAW.',
     'about_mission_item2' => 'Developing an inspiring spirit with global insight and social communication skills, through the mastery of more than one language.',

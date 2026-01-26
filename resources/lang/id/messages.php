@@ -2,8 +2,8 @@
 
 return [
     # Titel Halaman Utama
-    'welcome_title' => 'Selamat Datang di Al-Fashlah Islamic School',
-    'default_page_title' => 'Al-Fashlah Islamic School',
+    'welcome_title' => 'Selamat Datang di Islamic School',
+    'default_page_title' => 'Islamic School',
     'default_page_description' => 'Selamat Datang di Website Sekolah',
     'default_page_description2' => 'Mencetak generasi berkarakter, berprestasi, dan berwawasan global. Informasi akademik, kegiatan, dan PPDB dalam satu tempat.',
     'default_page_artikel' => 'Lihat Artikel',
@@ -57,7 +57,7 @@ return [
     'about_title' => 'Tentang',
     'about_paragraph1' => 'Misi & Visi Kami: Meraih Masa Depan Lebih Baik',
     'about_vision_title' => 'Visi',
-    'about_vision_content' => 'Program Pendidikan Al-Fashlah Islamic School bertujuan untuk membina generasi <span class="yellow-text">Muslim</span> yang memiliki karakter <span class="yellow-text">menginspirasi</span>, <span class="yellow-text">inovatif</span>, dan <span class="yellow-text">berintegritas</span>, mampu menjalankan peran mereka sebagai <span class="bold-text">\'Khalifatullah\'</span> melalui pengembangan pendidikan <span class="yellow-text">holistik</span>.',
+    'about_vision_content' => 'Program Pendidikan Islamic School bertujuan untuk membina generasi <span class="yellow-text">Muslim</span> yang memiliki karakter <span class="yellow-text">menginspirasi</span>, <span class="yellow-text">inovatif</span>, dan <span class="yellow-text">berintegritas</span>, mampu menjalankan peran mereka sebagai <span class="bold-text">\'Khalifatullah\'</span> melalui pengembangan pendidikan <span class="yellow-text">holistik</span>.',
     'about_mission_title' => 'Misi',
     'about_mission_item1' => 'Membentuk generasi Islam berdasarkan Al-Qur’an dan Sunnah Rasulullah SAW.',
     'about_mission_item2' => 'Mengembangkan semangat inspirasi dengan wawasan global dan kemampuan berkomunikasi secara sosial, melalui penguasaan lebih dari satu bahasa.',

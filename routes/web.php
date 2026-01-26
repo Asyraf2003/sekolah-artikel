@@ -12,11 +12,6 @@ use App\Models\Announcement;
 use App\Models\Program;
 use App\Models\Extracurricular;
 use App\Models\Event;
-use App\Http\Controllers\SecurityController;
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/security/2fa', [SecurityController::class, 'twoFactor'])->name('security.2fa');
-});
 
 // ===== Language switch
 Route::get('/lang/{locale}', function ($locale) {

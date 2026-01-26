@@ -14,7 +14,7 @@ use App\Http\Controllers\Admin\PpdbController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\CommentAdminController;
 
-Route::middleware(['auth', 'role:admin', 'verified', 'admin.2fa'])
+Route::middleware(['auth', 'role:admin', 'verified'])
     ->prefix('admin')
     ->as('admin.')
     ->group(function () {

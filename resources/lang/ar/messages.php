@@ -2,8 +2,8 @@
 
 return [
     # Titel Halaman Utama
-    'welcome_title' => 'أهلاً بكم في مدرسة الفسلة الإسلامية',
-    'default_page_title' => 'مدرسة الفسلة الإسلامية',
+    'welcome_title' => 'أهلاً بكم في مدرسة الفسلة',
+    'default_page_title' => 'مدرسة الفسلة',
     'default_page_description' => 'أهلاً بكم في الموقع الإلكتروني للمدرسة',
     'default_page_description2' => 'نحو بناء جيل ذي شخصية متميزة وإنجازات ورؤية عالمية. معلومات أكاديمية، وأنشطة، وقبول طلاب جدد (PPDB) في مكان واحد.',
     'default_page_artikel' => 'مشاهدة المقالات',
@@ -15,7 +15,7 @@ return [
     'nav_menu_tiga' => 'مقالات',
     'nav_menu_empat' => 'معرض الصور',
     'nav_menu_lima' => 'التعليم',
-    'nav_menu_lima_dropdown_satu' => 'المدرسة الابتدائية الإسلامية المتكاملة (SDIT)',
+    'nav_menu_lima_dropdown_satu' => 'المدرسة الابتدائية المتكاملة (SDIT)',
     'nav_menu_lima_dropdown_dua' => 'شريك اللغة',
     'nav_menu_lima_dropdown_dua_dropdown_satu' => 'اللغة الإنجليزية',
     'nav_menu_lima_dropdown_dua_dropdown_dua' => 'اللغة العربية',
@@ -57,7 +57,7 @@ return [
     'about_title' => 'عنّا',
     'about_paragraph1' => 'رسالتنا ورؤيتنا: نحو مستقبل أفضل',
     'about_vision_title' => 'الرؤية',
-    'about_vision_content' => 'يهدف البرنامج التعليمي لمدرسة الفسلة الإسلامية إلى رعاية جيل <span class="yellow-text">مسلم</span> ذي شخصية <span class="yellow-text">ملهمة</span> و<span class="yellow-text">مبتكرة</span> و<span class="yellow-text">متكاملة</span>، قادر على القيام بدوره كـ <span class="bold-text">"خليفة الله"</span> من خلال تطوير التعليم <span class="yellow-text">الشمولي</span>.',
+    'about_vision_content' => 'يهدف البرنامج التعليمي لمدرسة الفسلة إلى رعاية جيل <span class="yellow-text">مسلم</span> ذي شخصية <span class="yellow-text">ملهمة</span> و<span class="yellow-text">مبتكرة</span> و<span class="yellow-text">متكاملة</span>، قادر على القيام بدوره كـ <span class="bold-text">"خليفة الله"</span> من خلال تطوير التعليم <span class="yellow-text">الشمولي</span>.',
     'about_mission_title' => 'الرسالة',
     'about_mission_item1' => 'تكوين جيل إسلامي قائم على القرآن وسنة رسول الله صلى الله عليه وسلم.',
     'about_mission_item2' => 'تنمية روح الإلهام برؤية عالمية ومهارات تواصل اجتماعي، من خلال إتقان أكثر من لغة.',

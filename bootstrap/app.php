@@ -20,7 +20,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'set.locale' => \App\Http\Middleware\SetLocale::class,
-            'admin.2fa'  => \App\Http\Middleware\EnsureAdminHas2FA::class,
         ]);
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
