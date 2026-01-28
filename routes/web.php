@@ -12,6 +12,7 @@ use App\Models\Announcement;
 use App\Models\Program;
 use App\Models\Extracurricular;
 use App\Models\Event;
+use App\Http\Controllers\PpdbPublicController;
 
 // ===== Language switch
 Route::get('/lang/{locale}', function ($locale) {
@@ -60,12 +61,11 @@ Route::get('/', function () {
 })->name('home');
 
 // ===== PPDB (hanya untuk user login)
-Route::middleware(['web', 'auth', 'verified'])->group(function () {
-    Route::get('/ppdb', [PpdbController::class, 'create'])->name('ppdb.create');
-    Route::post('/ppdb', [PpdbController::class, 'store'])
-        ->middleware('throttle:4,1')
-        ->name('ppdb.store');
-});
+Route::get('/ppdb', [PpdbPublicController::class, 'create'])->name('ppdb.create');
+Route::post('/ppdb', [PpdbPublicController::class, 'store'])->name('ppdb.store');
+Route::get('/ppdb/receipt/{code}', [PpdbPublicController::class, 'receipt'])->name('ppdb.receipt');
+Route::get('/ppdb/activate/{token}', [PpdbPublicController::class, 'showActivate'])->name('ppdb.activate.show');
+Route::post('/ppdb/activate/{token}', [PpdbPublicController::class, 'activate'])->name('ppdb.activate');
 
 // ===== Dashboard redirector
 Route::get('/dashboard', function (Request $request) {
@@ -87,6 +87,3 @@ Route::middleware('auth')->group(function () {
 
 // ===== Authentication & Role-based routes
 require __DIR__.'/auth.php';
-require __DIR__.'/admin.php';
-require __DIR__.'/user.php';
-require __DIR__.'/other.php';

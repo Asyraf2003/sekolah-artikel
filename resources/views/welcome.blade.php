@@ -34,19 +34,6 @@
 
       </div>
     </div>
-    <div class="pointer-events-none absolute inset-x-0 bottom-6 z-10 flex justify-center">
-      <div class="pointer-events-auto flex items-center gap-2">
-        <template x-for="(img, i) in images" :key="'dot-'+i">
-          <button
-            class="h-12 w-12 rounded-full ring-1 ring-white/50 transition"
-            :class="current===i ? 'bg-white' : 'bg-white/40 hover:bg-white/60'"
-            @click="go(i)"
-            :aria-current="current===i"
-            :aria-label="`Slide ${i+1}`">
-          </button>
-        </template>
-      </div>
-    </div>
   </section>
 
   <div class="max-w-7xl mx-auto">

@@ -16,10 +16,6 @@ use Laravel\Fortify\Contracts\VerifyEmailViewResponse;
 
 class FortifyServiceProvider extends ServiceProvider
 {
-    public function register(): void
-    {
-        //
-    }
 
     public function boot(): void
     {
@@ -30,7 +26,6 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
 
         // Views (pakai hook bawaan Fortify — paling simpel & stabil)
-        Fortify::registerView(fn () => view('auth.register'));
         Fortify::loginView(fn () => view('auth.login'));
         Fortify::requestPasswordResetLinkView(fn () => view('auth.forgot-password'));
         Fortify::resetPasswordView(fn ($request) => view('auth.reset-password', ['request' => $request]));

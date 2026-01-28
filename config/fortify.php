@@ -26,12 +26,11 @@ return [
         'login' => 'login',
     ],
 
-    'views' => true,
+    'views' => false,
 
     'features' => [
         Features::registration(),
         Features::resetPasswords(),
-        Features::emailVerification(),
         Features::updateProfileInformation(),
         Features::updatePasswords(),
     ],

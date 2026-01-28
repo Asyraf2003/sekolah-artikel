@@ -9,13 +9,6 @@ use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
 
     /**
      * Bootstrap any application services.
@@ -23,9 +16,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('components.page.admin', function ($view) {
-        $ppdbCount = Ppdb::where('status', 'baru')->count();
+        // $ppdbCount = Ppdb::where('status', 'baru')->count();
         Paginator::useBootstrapFive(); 
-        $view->with('ppdbCount', $ppdbCount);
+        // $view->with('ppdbCount', $ppdbCount);
         });
     }
 }

@@ -13,10 +13,9 @@ use App\Http\Controllers\Admin\OtherController;
 use App\Http\Controllers\Admin\PpdbController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\CommentAdminController;
+use App\Http\Controllers\Admin\PpdbVerificationController;
 
 Route::middleware(['auth', 'role:admin', 'verified'])
-    ->prefix('admin')
-    ->as('admin.')
     ->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
@@ -60,4 +59,8 @@ Route::middleware(['auth', 'role:admin', 'verified'])
         // Moderasi komentar (admin)
         Route::patch('comments/{comment}/moderate', [PublicCommentController::class, 'moderate'])
             ->name('comments.moderate');
+        
+        Route::patch('/ppdb/{ppdb}/approve', [PpdbVerificationController::class, 'approve'])->name('ppdb.approve');
+        Route::patch('/ppdb/{ppdb}/reject', [PpdbVerificationController::class, 'reject'])->name('ppdb.reject');
+
     });

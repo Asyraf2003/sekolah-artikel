@@ -58,11 +58,7 @@
                 </form>
 
                 {{-- Footer links --}}
-                <div class="text-center mt-5 text-lg fs-4">
-                    <p class="text-gray-600">
-                        Don't have an account?
-                        <a href="{{ route('register') }}" class="font-bold">Sign up</a>.
-                    </p>
+                <div class="text-center mt-5 text-lg fs-4">                    
                     @if (Route::has('password.request'))
                         <p>
                             <a class="font-bold" href="{{ route('password.request') }}">Forgot password?</a>
