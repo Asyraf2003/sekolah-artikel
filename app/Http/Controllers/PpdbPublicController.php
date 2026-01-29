@@ -113,4 +113,56 @@ class PpdbPublicController extends Controller
         return redirect()->route('user.dashboard');
     }
 
+    public function showEdit(string $token)
+    {
+        $t = $this->findValidToken($token, 'edit');
+        $app = $t->application;
+
+        // edit hanya boleh kalau masih submitted atau rejected (sesuaikan kalau kamu mau)
+        abort_unless(in_array($app->status, ['submitted', 'rejected'], true), 403);
+
+        return view('ppdb.edit', [
+            'token' => $token,
+            'app' => $app,
+        ]);
+    }
+
+    public function updateEdit(Request $request, string $token)
+    {
+        $t = $this->findValidToken($token, 'edit');
+        $app = $t->application;
+
+        abort_unless(in_array($app->status, ['submitted', 'rejected'], true), 403);
+
+        $data = $request->validate([
+            'full_name' => ['required', 'string', 'max:120'],
+            'email' => ['required', 'email', 'max:190', Rule::unique('ppdb_applications', 'email')->ignore($app->id)],
+            'whatsapp' => ['required', 'string', 'max:30', Rule::unique('ppdb_applications', 'whatsapp')->ignore($app->id)],
+            'payment_proof' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:4096'],
+        ]);
+
+        // kalau upload baru, replace path lama
+        $newPath = $app->payment_proof_path;
+        if ($request->hasFile('payment_proof')) {
+            $newPath = $request->file('payment_proof')->store('ppdb/payment_proofs', 'local');
+        }
+
+        $app->update([
+            'full_name' => $data['full_name'],
+            'email' => $data['email'],
+            'whatsapp' => $data['whatsapp'],
+            'payment_proof_path' => $newPath,
+            'status' => 'submitted', // balik ke antrian verifikasi
+            'rejected_reason' => null,
+            'verified_at' => null,
+            'verified_by' => null,
+        ]);
+
+        // token edit sekali pakai
+        $t->update(['used_at' => now()]);
+
+        return redirect()
+            ->route('ppdb.receipt', $app->public_code)
+            ->with('success', 'Data berhasil diperbarui. Silakan tunggu verifikasi admin.');
+    }
 }

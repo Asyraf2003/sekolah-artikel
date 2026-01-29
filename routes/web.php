@@ -66,6 +66,8 @@ Route::post('/ppdb', [PpdbPublicController::class, 'store'])->name('ppdb.store')
 Route::get('/ppdb/receipt/{code}', [PpdbPublicController::class, 'receipt'])->name('ppdb.receipt');
 Route::get('/ppdb/activate/{token}', [PpdbPublicController::class, 'showActivate'])->name('ppdb.activate.show');
 Route::post('/ppdb/activate/{token}', [PpdbPublicController::class, 'activate'])->name('ppdb.activate');
+Route::get('/ppdb/edit/{token}', [PpdbPublicController::class, 'showEdit'])->name('ppdb.edit.show');
+Route::post('/ppdb/edit/{token}', [PpdbPublicController::class, 'updateEdit'])->name('ppdb.edit.update');
 
 // ===== Dashboard redirector
 Route::get('/dashboard', function (Request $request) {

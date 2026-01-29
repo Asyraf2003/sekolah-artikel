@@ -3,87 +3,74 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Ppdb;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Str;
+use App\Models\PpdbApplication;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Validation\Rule;
 
 class PpdbController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $q       = request('q');
-        $status  = request('status');
-        $program = request('program');
+        $q      = trim((string) $request->query('q', ''));
+        $status = $request->query('status');
+        $perPage = (int) ($request->query('per_page', 15));
 
-        $ppdbs = Ppdb::query()
-            ->select([
-                'id','nama_lengkap','nik','nisn','email','no_hp',
-                'program_pendidikan','status','created_at'
-            ])
-            ->when($q, function ($qr) use ($q) {
-                $qr->where(function ($s) use ($q) {
-                    $s->where('nama_lengkap','like',"%{$q}%")
-                      ->orWhere('nik','like',"%{$q}%")
-                      ->orWhere('nisn','like',"%{$q}%")
-                      ->orWhere('email','like',"%{$q}%");
+        $ppdbs = PpdbApplication::query()
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($qq) use ($q) {
+                    $qq->where('full_name', 'like', "%{$q}%")
+                        ->orWhere('email', 'like', "%{$q}%")
+                        ->orWhere('whatsapp', 'like', "%{$q}%")
+                        ->orWhere('public_code', 'like', "%{$q}%");
                 });
             })
-            ->when($status, fn($qr) => $qr->where('status', $status))
-            ->when($program, fn($qr) => $qr->where('program_pendidikan','like',"%{$program}%"))
-            ->orderByDesc('created_at')
-            ->paginate(12);
+            ->when($status, fn ($query) => $query->where('status', $status))
+            ->latest()
+            ->paginate($perPage)
+            ->withQueryString();
 
         return view('admin.ppdb.index', compact('ppdbs'));
     }
 
-    public function show(Ppdb $ppdb)
+    public function show(PpdbApplication $ppdb)
     {
-        $raw = [
-            'Foto'   => $ppdb->file_foto,
-            'Akta'   => $ppdb->file_akta,
-            'Ijazah' => $ppdb->file_ijazah,
-            'KK'     => $ppdb->file_kk,
+        $files = [
+            'Bukti Pembayaran' => $ppdb->payment_proof_path
+                ? route('admin.ppdb.paymentProof', $ppdb)
+                : null,
         ];
 
-        $disk = Storage::disk('public');
-
-        $toPublicUrl = function (?string $path) use ($disk): ?string {
-            if (!$path) return null;
-
-            if (Str::startsWith($path, ['http://','https://'])) {
-                return $path;
-            }
-
-            $normalized = ltrim($path, '/');
-            if (Str::startsWith($normalized, 'storage/')) {
-                $normalized = Str::after($normalized, 'storage/');
-            }
-
-            $publicUrl = Storage::url($normalized);
-
-
-            return URL::to($publicUrl);
-        };
-
-        $files = [];
-        foreach ($raw as $label => $path) {
-            $files[$label] = $toPublicUrl($path);
-        }
-
-        return view('admin.ppdb.show', compact('ppdb','files'));
+        return view('admin.ppdb.show', compact('ppdb', 'files'));
     }
 
-    public function updateStatus(Ppdb $ppdb)
+    public function updateStatus(Request $request, PpdbApplication $ppdb)
     {
-        $data = request()->validate([
-            'status' => ['required', Rule::in(['baru','diterima','ditolak'])],
+        $data = $request->validate([
+            'status' => ['required', 'string', Rule::in(['submitted', 'approved', 'activated', 'rejected'])],
         ]);
 
-        $ppdb->update(['status' => $data['status']]);
+        // Catatan: approve/reject sebaiknya lewat controller verifikasi (biar token/verified_at keurus).
+        // Tapi kamu minta halaman detail bisa ubah status, jadi ini disediakan.
+        $ppdb->update([
+            'status' => $data['status'],
+        ]);
 
-        return back()->with('success', 'Status PPDB diperbarui.');
+        return back()->with('success', 'Status berhasil diperbarui.');
+    }
+
+    public function paymentProof(PpdbApplication $ppdb)
+    {
+        abort_unless($ppdb->payment_proof_path, 404);
+
+        $disk = Storage::disk('local');
+        $path = $ppdb->payment_proof_path;
+
+        abort_unless($disk->exists($path), 404);
+
+        $absolute = $disk->path($path);
+
+        // browser bisa preview image/pdf kalau content-type benar
+        return response()->file($absolute);
     }
 }

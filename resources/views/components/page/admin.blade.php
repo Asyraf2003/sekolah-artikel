@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id">
+<html lang="id" data-bs-theme="{{ request()->cookie('theme', 'light') }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,6 +17,7 @@
     {{-- Favicon (pakai salah satu yang konsisten) --}}
     <link rel="icon" type="image/svg+xml" href="{{ asset('assets/compiled/svg/favicon.svg') }}">
     <link rel="alternate icon" type="image/png" href="{{ asset('assets/compiled/img/favicon-32x32.png') }}">
+    <link rel="stylesheet" href="{{ asset('assets/compiled/css/custom-canvas.css') }}?v={{ filemtime(public_path('assets/compiled/css/custom-canvas.css')) }}">
 
     {{-- Warna UI browser (sesuaikan brand) --}}
     <meta name="theme-color" content="#0ea5e9">
@@ -85,89 +86,66 @@
                             </a>
                         </li>
 
-                        <li class="sidebar-item {{ Request::routeIs('admin.ppdb.index') ? 'active' : '' }}">
+                        <li class="sidebar-item {{ Request::routeIs('admin.ppdb.*') ? 'active' : '' }}">
                             <a href="{{ route('admin.ppdb.index') }}" class="sidebar-link">
                                 <i class="bi bi-mortarboard-fill"></i>
                                 <span>PPDB</span>
                                 @isset($ppdbCount)
-                                @if($ppdbCount > 0)
-                                    <span class="badge bg-danger rounded-pill">{{ $ppdbCount }}</span>
-                                @endif
+                                    @if($ppdbCount > 0)
+                                        <span class="badge bg-danger rounded-pill">{{ $ppdbCount }}</span>
+                                    @endif
                                 @endisset
                             </a>
                         </li>
 
-                        {{-- ====== SISWA ====== --}}
-                        <li class="sidebar-item has-sub {{ Request::routeIs('admin.users.*') ? 'active' : '' }}">
+                        {{-- ====== PENGGABUNGAN SISWA & PEGAWAI ====== --}}
+                        <li class="sidebar-item has-sub {{ Request::routeIs('admin.users.*') || Request::routeIs('admin.others.*') ? 'active' : '' }}">
                             <a href="#" class="sidebar-link">
                                 <i class="bi bi-people-fill"></i>
-                                <span>Siswa</span>
+                                <span>Manajemen Personalia</span>
                             </a>
                             <ul class="submenu">
                                 <li class="submenu-item {{ Request::routeIs('admin.users.index') ? 'active' : '' }}">
-                                    <a href="{{ route('admin.users.index') }}" class="submenu-link">Siswa</a>
+                                    <a href="{{ route('admin.users.index') }}" class="submenu-link">Data Siswa</a>
                                 </li>
-                                <li class="submenu-item">
-                                    <a href="#" class="submenu-link">Menu Siswa</a>
-                                </li>
-                            </ul>
-                        </li>
-
-                        {{-- ====== PEGAWAI ====== --}}
-                        <li class="sidebar-title">Menu Pegawai</li>
-
-                        <li class="sidebar-item has-sub {{ Request::routeIs('admin.others.*') ? 'active' : '' }}">
-                            <a href="#" class="sidebar-link">
-                                <i class="bi bi-briefcase-fill"></i>
-                                <span>Pegawai</span>
-                            </a>
-                            <ul class="submenu">
                                 <li class="submenu-item {{ Request::routeIs('admin.others.index') ? 'active' : '' }}">
-                                    <a href="{{ route('admin.others.index') }}" class="submenu-link">Pegawai</a>
-                                </li>
-                                <li class="submenu-item">
-                                    <a href="#" class="submenu-link">Absensi Pegawai</a>
+                                    <a href="{{ route('admin.others.index') }}" class="submenu-link">Data Pegawai</a>
                                 </li>
                             </ul>
                         </li>
 
-                        {{-- ====== KEUANGAN ====== --}}
+                        {{-- ====== KEUANGAN (SEMUA DICORET) ====== --}}
                         <li class="sidebar-title">Keuangan</li>
-
-                        <li class="sidebar-item has-sub {{ Request::routeIs('admin.transaksi.*') ? 'active' : '' }}">
+                        <li class="sidebar-item has-sub">
                             <a href="#" class="sidebar-link">
                                 <i class="bi bi-cash-coin"></i>
-                                <span>Transaksi Siswa</span>
+                                <span style="text-decoration: line-through;">Transaksi Siswa</span>
                             </a>
                             <ul class="submenu">
-                                <li class="submenu-item {{ Request::routeIs('admin.transaksi.index') ? 'active' : '' }}">
-                                    <a href="{{ route('admin.transaksi.index') }}" class="submenu-link">Transaksi PPDB</a>
-                                </li>
-                                <li class="submenu-item"><a href="#" class="submenu-link">Tabungan Siswa</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link">Transaksi Umum</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link">Penggajian</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link">Setting Pembayaran</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link">Laporan</a></li>
+                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Transaksi PPDB</a></li>
+                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Tabungan Siswa</a></li>
+                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Transaksi Umum</a></li>
+                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Penggajian</a></li>
+                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Setting Pembayaran</a></li>
+                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Laporan</a></li>
                             </ul>
                         </li>
 
-                        {{-- ====== AKADEMIK ====== --}}
+                        {{-- ====== AKADEMIK (SEMUA DICORET) ====== --}}
                         <li class="sidebar-title">Menu Akademik</li>
-
-                        <li class="sidebar-item has-sub {{ Request::routeIs('admin.akademik.*') ? 'active' : '' }}">
+                        <li class="sidebar-item has-sub">
                             <a href="#" class="sidebar-link">
                                 <i class="bi bi-journal-bookmark-fill"></i>
-                                <span>Akademik</span>
+                                <span style="text-decoration: line-through;">Akademik</span>
                             </a>
                             <ul class="submenu">
-                                <li class="submenu-item"><a href="#" class="submenu-link">Mata Pelajaran</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link">Prestasi</a></li>
+                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Mata Pelajaran</a></li>
+                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Prestasi</a></li>
                             </ul>
                         </li>
 
                         {{-- ====== WEBSITE ====== --}}
                         <li class="sidebar-title">Website</li>
-
                         <li class="sidebar-item has-sub {{ Request::routeIs('admin.gallery.*') || Request::routeIs('admin.articles.*') || Request::routeIs('admin.comments.*') ? 'active' : '' }}">
                             <a href="#" class="sidebar-link">
                                 <i class="bi bi-globe2"></i>
@@ -185,27 +163,26 @@
                                     <a href="{{ route('admin.comments.index') }}" class="submenu-link">Komentar</a>
                                 </li>
                                 <li class="submenu-item"><a href="#" class="submenu-link">Kontak</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link">Home</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link">Website</a></li>
+                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Home</a></li>
+                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Website</a></li>
                             </ul>
                         </li>
 
-                        {{-- ====== PENGATURAN ====== --}}
+                        {{-- ====== PENGATURAN (SEMUA DICORET) ====== --}}
                         <li class="sidebar-title">Pengaturan</li>
-
-                        <li class="sidebar-item has-sub {{ Request::routeIs('admin.pengaturan.*') ? 'active' : '' }}">
+                        <li class="sidebar-item has-sub">
                             <a href="#" class="sidebar-link">
                                 <i class="bi bi-gear-fill"></i>
-                                <span>Pengaturan</span>
+                                <span style="text-decoration: line-through;">Pengaturan</span>
                             </a>
                             <ul class="submenu">
-                                <li class="submenu-item"><a href="#" class="submenu-link">Master Data</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link">Setting Umum</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link">Setting Akun</a></li>
+                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Master Data</a></li>
+                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Setting Umum</a></li>
+                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Setting Akun</a></li>
                             </ul>
                         </li>
 
-                        {{-- ====== AKUN (opsional di luar group) ====== --}}
+                        {{-- ====== AKUN ====== --}}
                         <li class="sidebar-item {{ Request::routeIs('profile.edit') ? 'active' : '' }}"> 
                             <a href="{{ route('profile.edit') }}" class="sidebar-link"> 
                                 <i class="bi bi-person"></i><span>Profile</span> 
