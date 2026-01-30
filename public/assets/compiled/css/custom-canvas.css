@@ -58,3 +58,21 @@
 #filterOffcanvas.offcanvas .btn-close:hover {
   opacity: 1;
 }
+
+/* Pastikan body mengambil tinggi penuh */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* Bagian konten akan mengambil sisa ruang yang ada */
+main, .main-content { 
+    flex: 1 0 auto;
+}
+
+/* Footer tetap di jalurnya tapi selalu di paling bawah */
+footer {
+    flex-shrink: 0;
+}

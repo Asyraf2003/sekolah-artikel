@@ -21,7 +21,7 @@ class GalleryController extends Controller
             ->when($published === '0', fn($qr) => $qr->draft())
             ->when($published === 'scheduled', fn($qr) => $qr->scheduled())
             ->sortByParam($sort)
-            ->paginate(12)
+            ->paginate(6)
             ->withQueryString();
 
         return view('admin.gallery.index', compact('images'));

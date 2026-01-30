@@ -114,36 +114,6 @@
                             </ul>
                         </li>
 
-                        {{-- ====== KEUANGAN (SEMUA DICORET) ====== --}}
-                        <li class="sidebar-title">Keuangan</li>
-                        <li class="sidebar-item has-sub">
-                            <a href="#" class="sidebar-link">
-                                <i class="bi bi-cash-coin"></i>
-                                <span style="text-decoration: line-through;">Transaksi Siswa</span>
-                            </a>
-                            <ul class="submenu">
-                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Transaksi PPDB</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Tabungan Siswa</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Transaksi Umum</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Penggajian</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Setting Pembayaran</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Laporan</a></li>
-                            </ul>
-                        </li>
-
-                        {{-- ====== AKADEMIK (SEMUA DICORET) ====== --}}
-                        <li class="sidebar-title">Menu Akademik</li>
-                        <li class="sidebar-item has-sub">
-                            <a href="#" class="sidebar-link">
-                                <i class="bi bi-journal-bookmark-fill"></i>
-                                <span style="text-decoration: line-through;">Akademik</span>
-                            </a>
-                            <ul class="submenu">
-                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Mata Pelajaran</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Prestasi</a></li>
-                            </ul>
-                        </li>
-
                         {{-- ====== WEBSITE ====== --}}
                         <li class="sidebar-title">Website</li>
                         <li class="sidebar-item has-sub {{ Request::routeIs('admin.gallery.*') || Request::routeIs('admin.articles.*') || Request::routeIs('admin.comments.*') ? 'active' : '' }}">
@@ -152,7 +122,6 @@
                                 <span>Website</span>
                             </a>
                             <ul class="submenu">
-                                <li class="submenu-item"><a href="#" class="submenu-link">Kegiatan</a></li>
                                 <li class="submenu-item {{ Request::routeIs('admin.gallery.index') ? 'active' : '' }}">
                                     <a href="{{ route('admin.gallery.index') }}" class="submenu-link">Gallery</a>
                                 </li>
@@ -162,27 +131,11 @@
                                 <li class="submenu-item {{ Request::routeIs('admin.comments.index') ? 'active' : '' }}">
                                     <a href="{{ route('admin.comments.index') }}" class="submenu-link">Komentar</a>
                                 </li>
-                                <li class="submenu-item"><a href="#" class="submenu-link">Kontak</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Home</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Website</a></li>
-                            </ul>
-                        </li>
-
-                        {{-- ====== PENGATURAN (SEMUA DICORET) ====== --}}
-                        <li class="sidebar-title">Pengaturan</li>
-                        <li class="sidebar-item has-sub">
-                            <a href="#" class="sidebar-link">
-                                <i class="bi bi-gear-fill"></i>
-                                <span style="text-decoration: line-through;">Pengaturan</span>
-                            </a>
-                            <ul class="submenu">
-                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Master Data</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Setting Umum</a></li>
-                                <li class="submenu-item"><a href="#" class="submenu-link" style="text-decoration: line-through;">Setting Akun</a></li>
                             </ul>
                         </li>
 
                         {{-- ====== AKUN ====== --}}
+                        <li class="sidebar-title">Akun</li>
                         <li class="sidebar-item {{ Request::routeIs('profile.edit') ? 'active' : '' }}"> 
                             <a href="{{ route('profile.edit') }}" class="sidebar-link"> 
                                 <i class="bi bi-person"></i><span>Profile</span> 
@@ -201,8 +154,19 @@
                 </div>
             </div>
         </div>
-        <div id="main">
-            {{ $slot }}
+        <div id="main" class="d-flex flex-column min-vh-100">
+            <div class="flex-grow-1">
+                {{ $slot }}
+            </div>
+
+            <footer>
+                <div class="footer clearfix mb-0 text-muted">
+                    <div class="float-start"><p>2025 &copy; Sekolah</p></div>
+                    <div class="float-end">
+                        <p>Crafted with <span class="text-danger"><i class="bi bi-heart-fill icon-mid"></i></span> by Asyraf</p>
+                    </div>
+                </div>
+            </footer>
         </div>
     </div>
     <script src="{{ asset('assets/static/js/components/dark.js') }}"></script>
