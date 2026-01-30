@@ -60,12 +60,18 @@ Route::get('/', function () {
     return view('welcome', compact('gallery', 'announcements', 'programs', 'ekstra', 'events'));
 })->name('home');
 
-// ===== PPDB (hanya untuk user login)
+// ===== PUBLIC (guest submit) =====
 Route::get('/ppdb', [PpdbPublicController::class, 'create'])->name('ppdb.create');
-Route::post('/ppdb', [PpdbPublicController::class, 'store'])->name('ppdb.store');
+Route::post('/ppdb', [PpdbPublicController::class, 'store'])
+    ->middleware('throttle:5,10') // 5 request per 10 menit per IP
+    ->name('ppdb.store');
 Route::get('/ppdb/receipt/{code}', [PpdbPublicController::class, 'receipt'])->name('ppdb.receipt');
+
+// token activation
 Route::get('/ppdb/activate/{token}', [PpdbPublicController::class, 'showActivate'])->name('ppdb.activate.show');
 Route::post('/ppdb/activate/{token}', [PpdbPublicController::class, 'activate'])->name('ppdb.activate');
+
+// token edit (hanya untuk rejected)
 Route::get('/ppdb/edit/{token}', [PpdbPublicController::class, 'showEdit'])->name('ppdb.edit.show');
 Route::post('/ppdb/edit/{token}', [PpdbPublicController::class, 'updateEdit'])->name('ppdb.edit.update');
 

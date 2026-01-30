@@ -60,6 +60,11 @@ return [
             'report' => false,
         ],
 
+        'ppdb_private' => [
+            'driver' => 'local',
+            'root' => storage_path('app/ppdb_private'),
+            'throw' => false,
+        ],
     ],
 
     /*

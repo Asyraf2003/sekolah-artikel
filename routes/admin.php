@@ -21,11 +21,11 @@ Route::middleware(['auth', 'role:admin', 'verified'])
 
         Route::get('/ppdb', [PpdbController::class, 'index'])->name('ppdb.index');
         Route::get('/ppdb/{ppdb}', [PpdbController::class, 'show'])->name('ppdb.show');
-        Route::patch('/ppdb/{ppdb}/status', [PpdbController::class, 'updateStatus'])->name('ppdb.updateStatus');
-        Route::patch('/ppdb/{ppdb}/approve', [PpdbVerificationController::class, 'approve'])->name('ppdb.approve');
-        Route::patch('/ppdb/{ppdb}/reject', [PpdbVerificationController::class, 'reject'])->name('ppdb.reject');
         Route::get('/ppdb/{ppdb}/payment-proof', [PpdbController::class, 'paymentProof'])->name('ppdb.paymentProof');
 
+        Route::patch('/ppdb/{ppdb}/approve', [PpdbVerificationController::class, 'approve'])->name('ppdb.approve');
+        Route::patch('/ppdb/{ppdb}/reject', [PpdbVerificationController::class, 'reject'])->name('ppdb.reject');
+    
         Route::get('/users',  [UserController::class,  'index'])->name('users.index');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 

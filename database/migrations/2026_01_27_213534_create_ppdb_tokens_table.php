@@ -17,13 +17,12 @@ return new class extends Migration {
             // activation | edit
             $table->string('type', 20);
 
-            // simpan hash (sha256) biar token plaintext nggak nongkrong di DB
+            // simpan hash sha256
             $table->char('token_hash', 64)->unique();
 
             $table->timestamp('expires_at')->nullable();
             $table->timestamp('used_at')->nullable();
 
-            // siapa yang generate (admin), opsional
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
 
             $table->timestamps();

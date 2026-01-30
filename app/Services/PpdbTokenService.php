@@ -11,14 +11,14 @@ class PpdbTokenService
 {
     public function issue(PpdbApplication $app, string $type, ?int $createdBy = null, int $ttlHours = 168): array
     {
-        // invalidate token lama tipe sama (biar refresh gampang)
+        // invalidate token lama tipe sama
         PpdbToken::where('ppdb_application_id', $app->id)
             ->where('type', $type)
             ->whereNull('used_at')
             ->update(['used_at' => now()]);
 
         $plain = Str::random(64);
-        $hash = hash('sha256', $plain);
+        $hash  = hash('sha256', $plain);
 
         PpdbToken::create([
             'ppdb_application_id' => $app->id,

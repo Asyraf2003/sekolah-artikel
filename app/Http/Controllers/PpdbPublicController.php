@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PpdbStatus;
 use App\Models\PpdbApplication;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use App\Models\PpdbToken;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class PpdbPublicController extends Controller
@@ -20,23 +23,35 @@ class PpdbPublicController extends Controller
 
     public function store(Request $request)
     {
+        // Honeypot anti bot
+        if ($request->filled('website')) {
+            abort(422, 'Spam detected');
+        }
+
         $data = $request->validate([
-            'full_name' => ['required', 'string', 'max:120'],
-            'email' => ['required', 'email', 'max:190', Rule::unique('ppdb_applications', 'email')],
-            'whatsapp' => ['required', 'string', 'max:30', Rule::unique('ppdb_applications', 'whatsapp')],
+            'full_name'     => ['required', 'string', 'max:120'],
+            'email'         => ['required', 'email', 'max:190', Rule::unique('ppdb_applications', 'email')],
+            'whatsapp'      => ['required', 'string', 'max:30', Rule::unique('ppdb_applications', 'whatsapp')],
             'payment_proof' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:4096'],
         ]);
 
-        $path = $request->file('payment_proof')->store('ppdb/payment_proofs', 'local');
+        $disk = Storage::disk('ppdb_private');
+        $path = $disk->putFile('payment_proofs', $request->file('payment_proof'));
 
-        $app = PpdbApplication::create([
-            'public_code' => Str::upper(Str::random(16)),
-            'full_name' => $data['full_name'],
-            'email' => $data['email'],
-            'whatsapp' => $data['whatsapp'],
+        $app = new PpdbApplication([
+            'full_name'          => $data['full_name'],
+            'email'              => $data['email'],
+            'whatsapp'           => $data['whatsapp'],
             'payment_proof_path' => $path,
-            'status' => 'submitted',
         ]);
+
+        // set field yang tidak mau bisa dimass-assign dari request
+        $app->forceFill([
+            'public_code' => Str::upper(Str::random(16)),
+            'status'      => PpdbStatus::SUBMITTED,
+        ]);
+
+        $app->save();
 
         return redirect()
             ->route('ppdb.receipt', $app->public_code)
@@ -69,45 +84,49 @@ class PpdbPublicController extends Controller
         $t = $this->findValidToken($token, 'activation');
         $app = $t->application;
 
-        // safety: hanya boleh activate kalau status approved (atau resubmitted->approved)
-        abort_unless(in_array($app->status, ['approved'], true), 403);
+        // Aktivasi hanya setelah admin approve
+        abort_unless($app->status === PpdbStatus::APPROVED, 403);
 
         return view('ppdb.activate', [
             'token' => $token,
             'app' => $app,
         ]);
     }
-
+        
     public function activate(Request $request, string $token)
     {
         $t = $this->findValidToken($token, 'activation');
         $app = $t->application;
 
-        abort_unless(in_array($app->status, ['approved'], true), 403);
+        abort_unless($app->status === PpdbStatus::APPROVED, 403);
 
         $data = $request->validate([
             'password' => ['required', 'confirmed', Password::min(8)],
         ]);
 
-        // buat user kalau belum ada
-        $user = $app->user_id
-            ? User::findOrFail($app->user_id)
-            : User::create([
-                'name' => $app->full_name,
-                'email' => $app->email,
-                'password' => Hash::make($data['password']),
-                'role' => 'user',
-                'email_verified_at' => now(), // karena ini aktivasi resmi
-            ]);
+        $user = DB::transaction(function () use ($app, $t, $data) {
+            $user = $app->user_id
+                ? User::findOrFail($app->user_id)
+                : User::where('email', $app->email)->first();
 
-        $app->update([
-            'user_id' => $user->id,
-            'status' => 'activated',
-        ]);
+            if (!$user) {
+                $user = User::create([
+                    'name' => $app->full_name,
+                    'email' => $app->email,
+                    'password' => Hash::make($data['password']),
+                    'role' => 'user',
+                    'email_verified_at' => now(),
+                ]);
+            } else {
+                $user->forceFill(['password' => Hash::make($data['password'])])->save();
+            }
 
-        $t->update(['used_at' => now()]);
+            $app->markActivated($user);
+            $t->update(['used_at' => now()]);
 
-        // auto login
+            return $user;
+        });
+
         auth()->login($user);
 
         return redirect()->route('user.dashboard');
@@ -118,8 +137,8 @@ class PpdbPublicController extends Controller
         $t = $this->findValidToken($token, 'edit');
         $app = $t->application;
 
-        // edit hanya boleh kalau masih submitted atau rejected (sesuaikan kalau kamu mau)
-        abort_unless(in_array($app->status, ['submitted', 'rejected'], true), 403);
+        // Edit hanya kalau status rejected (sesuai flow kamu)
+        abort_unless($app->status === PpdbStatus::REJECTED, 403);
 
         return view('ppdb.edit', [
             'token' => $token,
@@ -132,34 +151,38 @@ class PpdbPublicController extends Controller
         $t = $this->findValidToken($token, 'edit');
         $app = $t->application;
 
-        abort_unless(in_array($app->status, ['submitted', 'rejected'], true), 403);
+        abort_unless($app->status === PpdbStatus::REJECTED, 403);
 
         $data = $request->validate([
-            'full_name' => ['required', 'string', 'max:120'],
-            'email' => ['required', 'email', 'max:190', Rule::unique('ppdb_applications', 'email')->ignore($app->id)],
-            'whatsapp' => ['required', 'string', 'max:30', Rule::unique('ppdb_applications', 'whatsapp')->ignore($app->id)],
+            'full_name'     => ['required', 'string', 'max:120'],
+            'email'         => ['required', 'email', 'max:190', Rule::unique('ppdb_applications', 'email')->ignore($app->id)],
+            'whatsapp'      => ['required', 'string', 'max:30', Rule::unique('ppdb_applications', 'whatsapp')->ignore($app->id)],
             'payment_proof' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:4096'],
         ]);
 
-        // kalau upload baru, replace path lama
-        $newPath = $app->payment_proof_path;
-        if ($request->hasFile('payment_proof')) {
-            $newPath = $request->file('payment_proof')->store('ppdb/payment_proofs', 'local');
-        }
+        $disk = \Storage::disk('ppdb_private');
 
-        $app->update([
-            'full_name' => $data['full_name'],
-            'email' => $data['email'],
-            'whatsapp' => $data['whatsapp'],
-            'payment_proof_path' => $newPath,
-            'status' => 'submitted', // balik ke antrian verifikasi
-            'rejected_reason' => null,
-            'verified_at' => null,
-            'verified_by' => null,
-        ]);
+        DB::transaction(function () use ($request, $data, $app, $t, $disk) {
+            $newPath = $app->payment_proof_path;
 
-        // token edit sekali pakai
-        $t->update(['used_at' => now()]);
+            if ($request->hasFile('payment_proof')) {
+                $newPath = $disk->putFile('payment_proofs', $request->file('payment_proof'));
+
+                if ($app->payment_proof_path && $disk->exists($app->payment_proof_path)) {
+                    $disk->delete($app->payment_proof_path);
+                }
+            }
+
+            $app->update([
+                'full_name' => $data['full_name'],
+                'email' => $data['email'],
+                'whatsapp' => $data['whatsapp'],
+                'payment_proof_path' => $newPath,
+            ]);
+
+            $app->markResubmitted();
+            $t->update(['used_at' => now()]);
+        });
 
         return redirect()
             ->route('ppdb.receipt', $app->public_code)

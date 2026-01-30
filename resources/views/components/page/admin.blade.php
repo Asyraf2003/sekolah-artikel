@@ -102,7 +102,7 @@
                         <li class="sidebar-item has-sub {{ Request::routeIs('admin.users.*') || Request::routeIs('admin.others.*') ? 'active' : '' }}">
                             <a href="#" class="sidebar-link">
                                 <i class="bi bi-people-fill"></i>
-                                <span>Manajemen Personalia</span>
+                                <span>Manajemen User</span>
                             </a>
                             <ul class="submenu">
                                 <li class="submenu-item {{ Request::routeIs('admin.users.index') ? 'active' : '' }}">
@@ -115,10 +115,9 @@
                         </li>
 
                         {{-- ====== WEBSITE ====== --}}
-                        <li class="sidebar-title">Website</li>
                         <li class="sidebar-item has-sub {{ Request::routeIs('admin.gallery.*') || Request::routeIs('admin.articles.*') || Request::routeIs('admin.comments.*') ? 'active' : '' }}">
                             <a href="#" class="sidebar-link">
-                                <i class="bi bi-globe2"></i>
+                                <i class="bi bi-people-fill"></i>
                                 <span>Website</span>
                             </a>
                             <ul class="submenu">

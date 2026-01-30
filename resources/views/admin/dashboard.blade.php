@@ -114,21 +114,6 @@
             </div>
           </div>
         </div>
-
-        {{-- QUICK ACTIONS --}}
-        <div class="card">
-          <div class="card-header">
-            <h4 class="mb-0"><i class="bi bi-lightning-charge me-2"></i>Quick Actions</h4>
-          </div>
-          <div class="card-body">
-            <div class="d-grid gap-2">
-              <a href="#" class="btn btn-outline-primary btn-sm"><i class="bi bi-person-plus me-1"></i> Tambah Akun</a>
-              <a href="#" class="btn btn-outline-success btn-sm"><i class="bi bi-gear me-1"></i> Konfigurasi Sistem</a>
-              <a href="#" class="btn btn-outline-secondary btn-sm"><i class="bi bi-shield-lock me-1"></i> Roles & Permission</a>
-              <a href="#" class="btn btn-outline-info btn-sm"><i class="bi bi-cloud-arrow-up me-1"></i> Jalankan Backup</a>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   </div>

@@ -1,4 +1,3 @@
-{{-- resources/views/ppdb/receipt.blade.php --}}
 <x-page.index :title="'PPDB - Bukti Pendaftaran'">
 
     <div class="min-h-[80vh] flex flex-col justify-center items-center py-10 px-4 sm:px-6 lg:px-8 transition-colors duration-500">
@@ -44,15 +43,20 @@
 
                             {{-- Badge status --}}
                             @php
-                                $status = $app->status ?? 'submitted';
+                                // pastikan status selalu string
+                                $status = $app->status instanceof \BackedEnum
+                                    ? $app->status->value
+                                    : (string) ($app->status ?? 'submitted');
 
                                 $badge = match ($status) {
                                     'submitted'   => ['Menunggu Verifikasi', 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-200 dark:border-amber-900/40'],
-                                    'resubmitted' => ['Dikirim Ulang', 'bg-sky-50 text-sky-800 border-sky-200 dark:bg-sky-950/40 dark:text-sky-200 dark:border-sky-900/40'],
-                                    'approved'    => ['Disetujui', 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-200 dark:border-emerald-900/40'],
-                                    'rejected'    => ['Ditolak', 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-200 dark:border-rose-900/40'],
-                                    'activated'   => ['Sudah Aktif', 'bg-gray-50 text-gray-800 border-gray-200 dark:bg-gray-950/40 dark:text-gray-200 dark:border-gray-800'],
-                                    default       => [ucfirst($status), 'bg-gray-50 text-gray-800 border-gray-200 dark:bg-gray-950/40 dark:text-gray-200 dark:border-gray-800'],
+                                    'approved'    => ['Disetujui',           'bg-sky-50 text-sky-800 border-sky-200 dark:bg-sky-950/40 dark:text-sky-200 dark:border-sky-900/40'],
+                                    'rejected'    => ['Ditolak',             'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-200 dark:border-rose-900/40'],
+                                    'activated'   => ['Sudah Aktif',         'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-200 dark:border-emerald-900/40'],
+
+                                    // fallback kalau ada status lama/nyeleneh
+                                    'resubmitted' => ['Dikirim Ulang',       'bg-sky-50 text-sky-800 border-sky-200 dark:bg-sky-950/40 dark:text-sky-200 dark:border-sky-900/40'],
+                                    default       => [ucfirst($status),      'bg-gray-50 text-gray-800 border-gray-200 dark:bg-gray-950/40 dark:text-gray-200 dark:border-gray-800'],
                                 };
                             @endphp
 

@@ -20,7 +20,11 @@
                 
                 <form action="{{ route('ppdb.store') }}" method="POST" enctype="multipart/form-data" class="p-6 sm:p-10 space-y-5">
                     @csrf
-
+                    
+                    {{-- Honeypot Field --}}
+                    <div style="display: none;">
+                        <input type="text" name="website" tabindex="-1" autocomplete="off">
+                    </div>
                     {{-- Nama Lengkap --}}
                     <input type="text" name="full_name" value="{{ old('full_name') }}" placeholder="Nama Lengkap" required
                            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none transition-all
