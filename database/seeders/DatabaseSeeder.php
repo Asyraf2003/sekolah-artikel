@@ -27,7 +27,6 @@ class DatabaseSeeder extends Seeder
             ExtracurricularSeeder::class,
             EventSeeder::class,
             PpdbSeeder::class,
-            UangDaftarMasukSeeder::class,
         ]);
     }
 }

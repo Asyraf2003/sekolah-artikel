@@ -115,7 +115,6 @@ class PpdbPublicController extends Controller
                     'email' => $app->email,
                     'password' => Hash::make($data['password']),
                     'role' => 'user',
-                    'email_verified_at' => now(),
                 ]);
             } else {
                 $user->forceFill(['password' => Hash::make($data['password'])])->save();
@@ -128,6 +127,11 @@ class PpdbPublicController extends Controller
         });
 
         auth()->login($user);
+
+        if (! $user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
+            return redirect()->route('verification.notice');
+        }
 
         return redirect()->route('user.dashboard');
     }

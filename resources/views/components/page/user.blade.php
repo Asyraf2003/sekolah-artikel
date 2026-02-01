@@ -86,55 +86,8 @@
                             </a>
                         </li>
 
-                        {{-- MENU --}}
-                        <li class="sidebar-title">Menu</li>
-
-                        <li class="sidebar-item {{ Request::routeIs('user.transaksi.index') ? 'active' : '' }}">
-                            <a href="{{ route('user.transaksi.index') }}" class="sidebar-link">
-                                <i class="bi bi-receipt"></i>
-                                <span>Transaksi</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
-                                <i class="bi bi-calendar3"></i>
-                                <span>Jadwal Pelajaran</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
-                                <i class="bi bi-check2-square"></i>
-                                <span>Absensi</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
-                                <i class="bi bi-chat-dots-fill"></i>
-                                <span>Konseling</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
-                                <i class="bi bi-door-open-fill"></i>
-                                <span>Perizinan</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
-                                <i class="bi bi-exclamation-triangle-fill"></i>
-                                <span>Pelanggaran</span>
-                            </a>
-                        </li>
-
-                        {{-- SETTING --}}
-                        <li class="sidebar-title">Setting</li>
-
-                        {{-- ====== AKUN (opsional di luar group) ====== --}}
+                        {{-- ====== AKUN ====== --}}
+                        <li class="sidebar-title">Akun</li>
                         <li class="sidebar-item {{ Request::routeIs('profile.edit') ? 'active' : '' }}"> 
                             <a href="{{ route('profile.edit') }}" class="sidebar-link"> 
                                 <i class="bi bi-person"></i><span>Profile</span> 

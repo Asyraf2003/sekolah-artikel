@@ -80,7 +80,6 @@
                         <li class="sidebar-title fw-bold text-uppercase">Guru</li>
 
                         {{-- DASHBOARD --}}
-                        {{-- DASHBOARD --}}
                         <li class="sidebar-item {{ Request::routeIs('other.dashboard') ? 'active' : '' }}">
                             <a href="{{ route('other.dashboard') }}" class="sidebar-link">
                                 <i class="bi bi-grid-fill"></i>
@@ -88,160 +87,21 @@
                             </a>
                         </li>
 
-                        {{-- MENU UTAMA --}}
-                        <li class="sidebar-title">Menu</li>
-
-                        {{-- AKADEMIK: Kelas & Pelajaran --}}
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-collection"></i>
-                            <span>Kelas &amp; Pelajaran</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-calendar3"></i>
-                            <span>Jadwal Mengajar</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-journal-text"></i>
-                            <span>Tugas</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-book-half"></i>
-                            <span>Materi Ajar</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-ui-checks-grid"></i>
-                            <span>Bank Soal</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-award"></i>
-                            <span>Penilaian &amp; Rekap Nilai</span>
-                        </a>
-                        </li>
-
-                        {{-- KONTEN: Artikel & Pengumuman --}}
-                        <li class="sidebar-title">Konten</li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-newspaper"></i>
-                            <span>Artikel</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-megaphone"></i>
-                            <span>Pengumuman Kelas</span>
-                        </a>
-                        </li>
-
-                        {{-- KEHADIRAN: Absensi --}}
-                        <li class="sidebar-title">Kehadiran</li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-check2-square"></i>
-                            <span>Absensi Siswa</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-clipboard-check"></i>
-                            <span>Absensi Kerja (Guru)</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-graph-up"></i>
-                            <span>Rekap Kehadiran</span>
-                        </a>
-                        </li>
-
-                        {{-- ADMINISTRASI & LAYANAN --}}
-                        <li class="sidebar-title">Administrasi</li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-door-open-fill"></i>
-                            <span>Perizinan Siswa</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-envelope-paper"></i>
-                            <span>Surat Tugas</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-chat-dots-fill"></i>
-                            <span>Konseling</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-exclamation-triangle-fill"></i>
-                            <span>Pelanggaran</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-calendar-event"></i>
-                            <span>Agenda</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-folder2-open"></i>
-                            <span>Berkas</span>
-                        </a>
-                        </li>
-
-                        {{-- INFORMASI TAMBAHAN --}}
-                        <li class="sidebar-title">Informasi</li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-info-circle"></i>
-                            <span>Info Sekolah</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-calendar2-week"></i>
-                            <span>Kalender Akademik</span>
-                        </a>
-                        </li>
-                        <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <i class="bi bi-inbox"></i>
-                            <span>Pesan Masuk</span>
-                        </a>
-                        </li>
-
-                        {{-- SETTING --}}
-                        <li class="sidebar-title">Setting</li>
-
-                        {{-- ====== AKUN (opsional di luar group) ====== --}}
+                        {{-- ====== AKUN ====== --}}
+                        <li class="sidebar-title">Akun</li>
                         <li class="sidebar-item {{ Request::routeIs('profile.edit') ? 'active' : '' }}"> 
                             <a href="{{ route('profile.edit') }}" class="sidebar-link"> 
                                 <i class="bi bi-person"></i><span>Profile</span> 
                             </a> 
                         </li>
                         <li class="sidebar-item"> 
-                            <form method="POST" action="{{ route('logout') }}">
+                            <form id="logout-form" method="POST" action="{{ route('logout') }}" style="display: none;">
                                 @csrf 
-                                <a href="{{ route('logout') }}" class="sidebar-link" onclick="event.preventDefault(); this.closest('form').submit();"> 
-                                    <i class="bi bi-box-arrow-right"></i>
-                                    <span>Logout</span> 
-                                </a> 
-                            </form> 
+                            </form>
+                            <a href="{{ route('logout') }}" class="sidebar-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> 
+                                <i class="bi bi-box-arrow-right"></i>
+                                <span>Logout</span> 
+                            </a> 
                         </li>
                     </ul>
                 </div>
