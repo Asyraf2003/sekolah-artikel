@@ -1,60 +1,51 @@
-/* ===============================
-   Custom: Filter Offcanvas (Dark)
-   File: custom-canvas.css
-   =============================== */
-
+/* Follow current theme (light/dark) */
 .offcanvas.mazer-filter,
 .offcanvas.mazer-filter .offcanvas-header,
 .offcanvas.mazer-filter .offcanvas-body {
-  background: #151521;
-  color: #e7e7ef;
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
 }
 
 .offcanvas.mazer-filter {
-  border-left: 1px solid rgba(255,255,255,.08);
+  border-left: 1px solid var(--bs-border-color);
 }
 
 .offcanvas.mazer-filter .offcanvas-header {
-  border-bottom: 1px solid rgba(255,255,255,.08);
+  border-bottom: 1px solid var(--bs-border-color);
 }
 
 .offcanvas.mazer-filter .text-muted {
-  color: rgba(231,231,239,.7) !important;
+  color: var(--bs-secondary-color) !important;
 }
 
 .offcanvas.mazer-filter .form-label {
-  color: rgba(231,231,239,.9);
+  color: var(--bs-body-color);
 }
 
 .offcanvas.mazer-filter .form-control,
 .offcanvas.mazer-filter .form-select {
-  background: #10101a;
-  color: #e7e7ef;
-  border: 1px solid rgba(255,255,255,.12);
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border: 1px solid var(--bs-border-color);
 }
 
 .offcanvas.mazer-filter .form-control:focus,
 .offcanvas.mazer-filter .form-select:focus {
   outline: 0;
-  box-shadow: 0 0 0 .15rem rgba(67, 94, 190, .35);
-  border-color: rgba(67, 94, 190, .65);
+  box-shadow: 0 0 0 .15rem rgba(var(--bs-primary-rgb), .35);
+  border-color: rgba(var(--bs-primary-rgb), .65);
 }
 
 .offcanvas.mazer-filter .form-control::placeholder {
-  color: rgba(231,231,239,.55);
+  color: var(--bs-secondary-color);
+  opacity: .75;
 }
 
-.offcanvas.mazer-filter hr {
-  border-color: rgba(255,255,255,.10);
-  opacity: 1;
-}
-
-/* tombol close bootstrap biar kelihatan di dark */
-.offcanvas.mazer-filter .btn-close {
+/* Close button cuma perlu di-invert pas dark theme */
+html[data-bs-theme="dark"] .offcanvas.mazer-filter .btn-close {
   filter: invert(1) grayscale(100%);
   opacity: .85;
 }
-
-.offcanvas.mazer-filter .btn-close:hover {
+html[data-bs-theme="dark"] .offcanvas.mazer-filter .btn-close:hover {
   opacity: 1;
 }

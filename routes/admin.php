@@ -38,12 +38,18 @@ Route::middleware(['auth', 'role:admin', 'verified'])
         Route::post('quill/image', [QuillImageController::class, 'store'])->name('quill.image');
 
         Route::get('/comments', [CommentAdminController::class, 'index'])->name('comments.index');
-        Route::patch('/comments/{comment}', [CommentAdminController::class, 'update'])->name('comments.update');
         Route::patch('/comments/bulk', [CommentAdminController::class, 'bulk'])->name('comments.bulk');
+        Route::patch('/comments/{comment}', [CommentAdminController::class, 'update'])->name('comments.update');
         Route::delete('/comments/{comment}', [CommentAdminController::class, 'destroy'])->name('comments.destroy');
-
         Route::patch('comments/{comment}/moderate', [PublicCommentController::class, 'moderate'])
             ->name('comments.moderate');
+        Route::patch('/comments/{comment}', [CommentAdminController::class, 'update'])
+            ->whereNumber('comment')
+            ->name('comments.update');
+
+        Route::delete('/comments/{comment}', [CommentAdminController::class, 'destroy'])
+            ->whereNumber('comment')
+            ->name('comments.destroy');
 
         // Kategori (full CRUD)
         Route::resource('categories', CategoryController::class);
