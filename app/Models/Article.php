@@ -16,24 +16,31 @@ class Article extends Model
         'slug',
         'hero_image',
         'excerpt_id', 'excerpt_en', 'excerpt_ar',
-        'content_delta',
-        'content_html',
+
+        'content_delta_id','content_delta_en','content_delta_ar',
+        'content_html_id','content_html_en','content_html_ar',
+
         'status',
         'published_at',
         'is_featured',
         'pinned_until',
+
         'view_count', 'comment_count', 'share_count', 'reading_time',
     ];
 
     protected $casts = [
-        'content_delta'  => 'array',
         'published_at'   => 'datetime',
         'pinned_until'   => 'datetime',
         'is_featured'    => 'bool',
+
         'view_count'     => 'integer',
         'comment_count'  => 'integer',
         'share_count'    => 'integer',
         'reading_time'   => 'integer',
+
+        'content_delta_id' => 'array',
+        'content_delta_en' => 'array',
+        'content_delta_ar' => 'array',
     ];
 
     /** RELATIONS */
@@ -135,20 +142,16 @@ class Article extends Model
     protected static function booted(): void
     {
         static::saving(function (Article $article) {
-            // slug dibuat kalau kosong (create/update). Tidak auto-regenerate kalau sudah ada.
             if (blank($article->slug)) {
                 $baseTitle = $article->titleFor('id') ?: $article->titleFor('en') ?: 'article';
                 $article->slug = static::generateUniqueSlug($baseTitle, $article->id);
             }
 
-            // Normalisasi kecil biar ga banyak state absurd:
             if ($article->status !== 'published') {
-                // Kalau bukan published, published_at jangan dipakai.
                 $article->published_at = null;
             }
 
             if ($article->status === 'published' && is_null($article->published_at)) {
-                // Publish tanpa tanggal? ya sudah sekarang.
                 $article->published_at = now();
             }
         });

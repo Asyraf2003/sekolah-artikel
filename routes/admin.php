@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\OtherController;
 use App\Http\Controllers\Admin\PpdbController;
 use App\Http\Controllers\Admin\CommentAdminController;
 use App\Http\Controllers\Admin\PpdbVerificationController;
+use App\Http\Controllers\Admin\QuillImageController;
 
 Route::middleware(['auth', 'role:admin', 'verified'])
     ->group(function () {
@@ -34,12 +35,16 @@ Route::middleware(['auth', 'role:admin', 'verified'])
         Route::resource('gallery', GalleryController::class);
         
         Route::resource('articles', ArticleController::class);
+        Route::post('quill/image', [QuillImageController::class, 'store'])->name('quill.image');
 
         Route::get('/comments', [CommentAdminController::class, 'index'])->name('comments.index');
         Route::patch('/comments/{comment}', [CommentAdminController::class, 'update'])->name('comments.update');
         Route::patch('/comments/bulk', [CommentAdminController::class, 'bulk'])->name('comments.bulk');
         Route::delete('/comments/{comment}', [CommentAdminController::class, 'destroy'])->name('comments.destroy');
-        
+
+        Route::patch('comments/{comment}/moderate', [PublicCommentController::class, 'moderate'])
+            ->name('comments.moderate');
+
         // Kategori (full CRUD)
         Route::resource('categories', CategoryController::class);
 

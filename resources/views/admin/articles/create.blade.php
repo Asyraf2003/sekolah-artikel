@@ -1,432 +1,452 @@
 <x-page.admin>
-  <div class="page-heading">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-      <div>
-        <h3 class="mb-1">Tambah Artikel</h3>
-        <p class="text-muted mb-0">Buat artikel multi-bahasa dengan gambar hero & sections</p>
-      </div>
-      <a href="{{ route('admin.articles.index') }}" class="btn btn-light">
-        <i class="bi bi-arrow-left"></i> Kembali
-      </a>
+    @php
+        $backUrl = route('admin.articles.index', request()->query());
+        $nowLocal = now()->format('Y-m-d\TH:i');
+    @endphp
+
+    <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
+
+    <div class="page-heading">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+            <div>
+                <h3 class="mb-1">Tambah Artikel</h3>
+                <p class="text-muted mb-0">Buat artikel baru dengan editor Quill.</p>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a href="{{ $backUrl }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>
+                <button form="articleCreateForm" type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Simpan
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div class="card">
-      <div class="card-body">
-        @if ($errors->any())
-          <div class="alert alert-danger">
-            <div class="fw-semibold mb-2">Gagal menyimpan artikel:</div>
-            <ul class="mb-0">
-              @foreach ($errors->all() as $err)
-                <li>{{ $err }}</li>
-              @endforeach
-            </ul>
-          </div>
-        @endif
+    <div class="page-content">
+        <section class="section">
 
-        <form method="POST" action="{{ route('admin.articles.store') }}" enctype="multipart/form-data" id="articleForm">
-          @csrf
-
-          {{-- ====== JUDUL & SLUG ====== --}}
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label">Judul (ID) <span class="text-danger">*</span></label>
-              <input name="title_id" class="form-control @error('title_id') is-invalid @enderror" required value="{{ old('title_id') }}">
-              @error('title_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Title (EN) <span class="text-danger">*</span></label>
-              <input name="title_en" class="form-control @error('title_en') is-invalid @enderror" required value="{{ old('title_en') }}">
-              @error('title_en') <div class="invalid-feedback">{{ $message }}</div> @enderror
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">العنوان (AR) <span class="text-danger">*</span></label>
-              <input name="title_ar" class="form-control @error('title_ar') is-invalid @enderror" dir="rtl" required value="{{ old('title_ar') }}">
-              @error('title_ar') <div class="invalid-feedback">{{ $message }}</div> @enderror
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Slug (opsional)</label>
-              <div class="input-group">
-                <input name="slug" id="slugInput" class="form-control @error('slug') is-invalid @enderror" placeholder="otomatis dari judul jika kosong" value="{{ old('slug') }}">
-                <button class="btn btn-outline-secondary" type="button" id="btnGenSlug">Generate</button>
-                @error('slug') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-              </div>
-              <div class="form-text">Jika dikosongkan, slug akan diambil dari Judul (ID) dan dijamin unik oleh server.</div>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Hero Image <span class="text-danger">*</span></label>
-              <input type="file" name="hero_image" accept="image/*" class="form-control @error('hero_image') is-invalid @enderror" id="heroInput" required>
-              @error('hero_image') <div class="invalid-feedback">{{ $message }}</div> @enderror
-              <div class="mt-2">
-                <img id="heroPreview" class="img-fluid rounded border d-none" alt="Preview hero">
-              </div>
-            </div>
-          </div>
-
-          {{-- ====== EXCERPT ====== --}}
-          <div class="row g-3 mt-2">
-            <div class="col-md-4">
-              <label class="form-label">Excerpt (ID)</label>
-              <input name="excerpt_id" class="form-control" maxlength="300" value="{{ old('excerpt_id') }}">
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Excerpt (EN)</label>
-              <input name="excerpt_en" class="form-control" maxlength="300" value="{{ old('excerpt_en') }}">
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">الملخص (AR)</label>
-              <input name="excerpt_ar" class="form-control" dir="rtl" maxlength="300" value="{{ old('excerpt_ar') }}">
-            </div>
-          </div>
-
-          {{-- ====== META ====== --}}
-          <div class="row g-3 mt-2">
-            <div class="col-md-4">
-              <label class="form-label">Meta Title (ID)</label>
-              <input name="meta_title_id" class="form-control" maxlength="120" value="{{ old('meta_title_id') }}">
-              <label class="form-label mt-2">Meta Desc (ID)</label>
-              <input name="meta_desc_id" class="form-control" maxlength="250" value="{{ old('meta_desc_id') }}">
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Meta Title (EN)</label>
-              <input name="meta_title_en" class="form-control" maxlength="120" value="{{ old('meta_title_en') }}">
-              <label class="form-label mt-2">Meta Desc (EN)</label>
-              <input name="meta_desc_en" class="form-control" maxlength="250" value="{{ old('meta_desc_en') }}">
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">عنوان الميتا (AR)</label>
-              <input name="meta_title_ar" class="form-control" dir="rtl" maxlength="120" value="{{ old('meta_title_ar') }}">
-              <label class="form-label mt-2">وصف الميتا (AR)</label>
-              <input name="meta_desc_ar" class="form-control" dir="rtl" maxlength="250" value="{{ old('meta_desc_ar') }}">
-            </div>
-          </div>
-
-          {{-- ====== STATUS & PENJADWALAN ====== --}}
-          <div class="row g-3 mt-3">
-            <div class="col-md-3">
-              <label class="form-label">Status</label>
-              <select name="status" class="form-select">
-                @foreach(['draft'=>'Draft','scheduled'=>'Scheduled','published'=>'Published','archived'=>'Archived'] as $val=>$lbl)
-                  <option value="{{ $val }}" @selected(old('status','draft')===$val)>{{ $lbl }}</option>
-                @endforeach
-              </select>
-              <div class="form-text">Gunakan <b>Scheduled</b> bila ingin terbit otomatis pada waktu tertentu.</div>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Published At</label>
-              <input type="datetime-local" name="published_at" class="form-control" value="{{ old('published_at') }}">
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Scheduled For</label>
-              <input type="datetime-local" name="scheduled_for" class="form-control" value="{{ old('scheduled_for') }}">
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Published? (legacy)</label>
-              <label class="form-label">Published? (legacy)</label>
-              <input type="hidden" name="is_published" value="0">
-              <input type="text" class="form-control" value="Tidak" disabled>
-              <div class="form-text">Nilai ini selalu diset ke "Tidak".</div>
-              <div class="form-text">Opsional; utamanya gunakan <b>Status</b>.</div>
-            </div>
-          </div>
-          {{-- ====== FEATURED / HOT / PINNED ====== --}}
-          <div class="row g-3 mt-2">
-            <div class="col-md-3">
-              <label class="form-label">Featured</label>
-              <select name="is_featured" class="form-select">
-                <option value="0" @selected(old('is_featured',0)==0)>Tidak</option>
-                <option value="1" @selected(old('is_featured',0)==1)>Ya</option>
-              </select>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Hot</label>
-              <select name="is_hot" class="form-select" id="isHotSelect">
-                <option value="0" @selected(old('is_hot',0)==0)>Tidak</option>
-                <option value="1" @selected(old('is_hot',0)==1)>Ya</option>
-              </select>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Hot Until</label>
-              <input type="datetime-local" name="hot_until" class="form-control" id="hotUntilInput" value="{{ old('hot_until') }}">
-              <div class="form-text">Kosongkan untuk tanpa batas.</div>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Pinned Until</label>
-              <input type="datetime-local" name="pinned_until" class="form-control" value="{{ old('pinned_until') }}">
-            </div>
-          </div>
-
-          {{-- ====== KATEGORI & TAG ====== --}}
-          <div class="row g-3 mt-3">
-            <div class="col-md-6">
-              <label class="form-label">Kategori</label>
-              <select class="form-select" name="category_ids[]" multiple>
-                @foreach(\App\Models\Category::orderBy('name_id')->get() as $cat)
-                  <option value="{{ $cat->id }}" @selected(collect(old('category_ids',[]))->contains($cat->id))>
-                    {{ $cat->name_id }}
-                  </option>
-                @endforeach
-              </select>
-              <div class="form-text">Tahan Ctrl / Cmd untuk pilih banyak.</div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Tag</label>
-              <input class="form-control" name="tag_slugs[]" placeholder="Tulis slug tag lalu Enter, bisa banyak"
-                     data-role="tag-input">
-              <div class="form-text">Atau kirimkan `tag_ids[]` jika memilih dari daftar yang ada.</div>
-              @foreach(\App\Models\Tag::orderBy('name')->get() as $tag)
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" name="tag_ids[]" value="{{ $tag->id }}" id="tag{{ $tag->id }}">
-                  <label class="form-check-label" for="tag{{ $tag->id }}">#{{ $tag->name }}</label>
+            @if($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle me-1"></i>{{ $errors->first() }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-              @endforeach
-            </div>
-          </div>
+            @endif
 
-          {{-- ====== SECTIONS ====== --}}
-          <div class="card border-0 shadow-sm mt-4">
-            <div class="card-header d-flex justify-content-between align-items-center bg-body-tertiary">
-              <h5 class="card-title mb-0">Sections</h5>
-              <button type="button" class="btn btn-primary" id="btnAddSection">
-                <i class="bi bi-plus-lg me-1"></i> Tambah Section
-              </button>
-            </div>
-            <div class="card-body" id="sectionsContainer">
-              <div class="text-muted small" id="emptyHint">Belum ada section. Klik <b>Tambah Section</b> untuk menambah.</div>
-            </div>
-          </div>
+            <form id="articleCreateForm"
+                  method="POST"
+                  action="{{ route('admin.articles.store') }}"
+                  enctype="multipart/form-data">
+                @csrf
 
-          {{-- ====== AKSI ====== --}}
-          <div class="d-flex justify-content-end gap-2 mt-3">
-            <a href="{{ route('admin.articles.index') }}" class="btn btn-light">Batal</a>
-            <button class="btn btn-primary">
-              <i class="bi bi-save me-1"></i> Simpan
-            </button>
-          </div>
-        </form>
+                <div class="row g-3">
+                    <div class="col-12 col-lg-8">
 
-        {{-- ====== TEMPLATE SECTION ====== --}}
-        <template id="sectionTemplate">
-          <div class="border rounded-3 p-3 mb-3 section-item" data-index="__IDX__">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-              <div class="d-flex align-items-center flex-wrap gap-2">
-                <span class="badge bg-primary-subtle text-body">#<span class="sec-number">__NUM__</span></span>
-                <select class="form-select form-select-sm w-auto" name="sections[__IDX__][type]">
-                  <option value="paragraph">Paragraph</option>
-                  <option value="quote">Quote</option>
-                  <option value="image_only">Image Only</option>
-                </select>
-                <div class="input-group input-group-sm" style="width:160px;">
-                  <span class="input-group-text">Urutan</span>
-                  <input type="number" class="form-control sort-order" min="0" name="sections[__IDX__][sort_order]" value="__IDX__" required>
+                        <div class="card mb-3">
+                            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                <div class="fw-semibold">
+                                    <i class="bi bi-translate me-1"></i> Judul & Ringkasan Multi-bahasa
+                                </div>
+                                <div class="small text-muted">Minimal isi Bahasa Indonesia.</div>
+                            </div>
+
+                            <div class="card-body">
+                                <ul class="nav nav-tabs" id="langTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="tab-id" data-bs-toggle="tab" data-bs-target="#pane-id" type="button" role="tab">ID</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="tab-en" data-bs-toggle="tab" data-bs-target="#pane-en" type="button" role="tab">EN</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="tab-ar" data-bs-toggle="tab" data-bs-target="#pane-ar" type="button" role="tab">AR</button>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content pt-3">
+                                    <div class="tab-pane fade show active" id="pane-id" role="tabpanel" aria-labelledby="tab-id">
+                                        <div class="mb-3">
+                                            <label class="form-label">Judul (ID) <span class="text-danger">*</span></label>
+                                            <input type="text"
+                                                   name="title_id"
+                                                   id="titleId"
+                                                   class="form-control @error('title_id') is-invalid @enderror"
+                                                   value="{{ old('title_id') }}"
+                                                   placeholder="Contoh: Kegiatan Pelatihan">
+                                            @error('title_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                            <div class="form-text">
+                                                Slug dibuat otomatis dari judul (dan dibuat unik).
+                                                <span class="ms-2">Preview: <code id="slugPreview">—</code></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-0">
+                                            <label class="form-label">Ringkasan (ID)</label>
+                                            <textarea name="excerpt_id"
+                                                      rows="4"
+                                                      class="form-control @error('excerpt_id') is-invalid @enderror"
+                                                      placeholder="Ringkasan singkat…">{{ old('excerpt_id') }}</textarea>
+                                            @error('excerpt_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="pane-en" role="tabpanel" aria-labelledby="tab-en">
+                                        <div class="mb-3">
+                                            <label class="form-label">Title (EN)</label>
+                                            <input type="text"
+                                                   name="title_en"
+                                                   class="form-control @error('title_en') is-invalid @enderror"
+                                                   value="{{ old('title_en') }}"
+                                                   placeholder="Optional English title">
+                                            @error('title_en') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                        </div>
+
+                                        <div class="mb-0">
+                                            <label class="form-label">Excerpt (EN)</label>
+                                            <textarea name="excerpt_en"
+                                                      rows="4"
+                                                      class="form-control @error('excerpt_en') is-invalid @enderror"
+                                                      placeholder="Optional English excerpt…">{{ old('excerpt_en') }}</textarea>
+                                            @error('excerpt_en') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="pane-ar" role="tabpanel" aria-labelledby="tab-ar">
+                                        <div class="mb-3">
+                                            <label class="form-label">العنوان (AR)</label>
+                                            <input type="text"
+                                                   name="title_ar"
+                                                   dir="rtl"
+                                                   class="form-control @error('title_ar') is-invalid @enderror"
+                                                   value="{{ old('title_ar') }}"
+                                                   placeholder="اختياري">
+                                            @error('title_ar') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                        </div>
+
+                                        <div class="mb-0">
+                                            <label class="form-label">ملخص (AR)</label>
+                                            <textarea name="excerpt_ar"
+                                                      rows="4"
+                                                      dir="rtl"
+                                                      class="form-control @error('excerpt_ar') is-invalid @enderror"
+                                                      placeholder="اختياري...">{{ old('excerpt_ar') }}</textarea>
+                                            @error('excerpt_ar') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                <div class="fw-semibold">
+                                    <i class="bi bi-pencil-square me-1"></i> Isi Artikel
+                                </div>
+                                <div class="small text-muted">Quill: header, quote, bold/italic/underline/strike, warna, list, link, image.</div>
+                            </div>
+
+                            <div class="card-body">
+                                <div id="quillToolbar" class="mb-2"></div>
+                                <div id="quillEditor" style="min-height: 320px;" class="bg-white"></div>
+
+                                <input type="hidden" name="content_delta" id="contentDelta">
+                                <input type="hidden" name="content_html" id="contentHtml">
+
+                                @error('content_delta') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+                                @error('content_html') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+
+                                <div class="form-text mt-2">
+                                    Gambar bisa lewat tombol image. Blueprint ini pakai upload endpoint (lebih waras daripada base64).
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-4">
+
+                        <div class="card mb-3">
+                            <div class="card-header fw-semibold">
+                                <i class="bi bi-image me-1"></i> Cover
+                            </div>
+
+                            <div class="card-body">
+                                <div class="ratio ratio-16x9 rounded overflow-hidden border mb-3 bg-body-tertiary">
+                                    <img id="heroPreview"
+                                         src="https://placehold.co/1200x675?text=Cover"
+                                         alt="Cover"
+                                         style="object-fit: cover;">
+                                </div>
+
+                                <label class="form-label">Upload cover</label>
+                                <input type="file"
+                                       name="hero_image"
+                                       accept="image/*"
+                                       class="form-control @error('hero_image') is-invalid @enderror"
+                                       onchange="previewHero(event)">
+                                @error('hero_image') <div class="invalid-feedback">{{ $message }}</div> @enderror
+
+                                <div class="form-text mt-2">JPG/PNG, ukuran wajar.</div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header fw-semibold">
+                                <i class="bi bi-broadcast me-1"></i> Publikasi
+                            </div>
+
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Status</label>
+                                    <select name="status" id="statusSelect" class="form-select @error('status') is-invalid @enderror" onchange="togglePublishTime()">
+                                        <option value="draft" @selected(old('status','draft')==='draft')>Draft</option>
+                                        <option value="published" @selected(old('status')==='published')>Published</option>
+                                        <option value="archived" @selected(old('status')==='archived')>Archived</option>
+                                    </select>
+                                    @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    <div class="form-text">
+                                        Scheduled itu otomatis: status Published + published_at di masa depan.
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Waktu terbit</label>
+                                    <input type="datetime-local"
+                                           id="publishedAt"
+                                           name="published_at"
+                                           class="form-control @error('published_at') is-invalid @enderror"
+                                           value="{{ old('published_at') }}"
+                                           min="{{ $nowLocal }}">
+                                    @error('published_at') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    <div class="form-text">Aktif kalau status Published. Kosongkan untuk “terbit sekarang”.</div>
+                                </div>
+
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           role="switch"
+                                           id="isFeatured"
+                                           name="is_featured"
+                                           value="1"
+                                           {{ old('is_featured') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="isFeatured">Featured</label>
+                                </div>
+
+                                <div class="mb-0">
+                                    <label class="form-label">Pinned sampai</label>
+                                    <input type="datetime-local"
+                                           name="pinned_until"
+                                           class="form-control @error('pinned_until') is-invalid @enderror"
+                                           value="{{ old('pinned_until') }}">
+                                    @error('pinned_until') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    <div class="form-text">Opsional. Kalau diisi dan masih future, dianggap pinned.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header fw-semibold">
+                                <i class="bi bi-tags me-1"></i> Kategori & Tag
+                            </div>
+
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Kategori</label>
+                                    <div class="vstack gap-2" style="max-height: 180px; overflow:auto;">
+                                        @foreach($categories ?? [] as $c)
+                                            <label class="form-check">
+                                                <input class="form-check-input"
+                                                       type="checkbox"
+                                                       name="category_ids[]"
+                                                       value="{{ $c->id }}"
+                                                       @checked(in_array($c->id, old('category_ids', [])))>
+                                                <span class="form-check-label">{{ $c->name }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                    @error('category_ids') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Tag (pilih)</label>
+                                    <select name="tag_ids[]" class="form-select" multiple size="6">
+                                        @foreach($tags ?? [] as $t)
+                                            <option value="{{ $t->id }}" @selected(in_array($t->id, old('tag_ids', [])))>
+                                                {{ $t->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="mb-0">
+                                    <label class="form-label">Tag baru</label>
+                                    <input type="text" id="tagNewInput" class="form-control" placeholder="contoh: kegiatan, ppdb, prestasi">
+                                    <div class="form-text">Pisahkan dengan koma. Akan dibuat otomatis jika belum ada.</div>
+                                    <div id="tagNewHidden"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
-              </div>
-              <div class="d-flex gap-1">
-                <button type="button" class="btn btn-outline-secondary btn-sm btnUp"><i class="bi bi-arrow-up"></i></button>
-                <button type="button" class="btn btn-outline-secondary btn-sm btnDown"><i class="bi bi-arrow-down"></i></button>
-                <button type="button" class="btn btn-danger btn-sm btnRemove"><i class="bi bi-trash me-1"></i> Hapus</button>
-              </div>
-            </div>
 
-            <div class="row g-2 body-fields">
-              <div class="col-12 col-md-4">
-                <label class="form-label small">Isi (ID)</label>
-                <textarea rows="3" class="form-control" name="sections[__IDX__][body_id]"></textarea>
-              </div>
-              <div class="col-12 col-md-4">
-                <label class="form-label small">Content (EN)</label>
-                <textarea rows="3" class="form-control" name="sections[__IDX__][body_en]"></textarea>
-              </div>
-              <div class="col-12 col-md-4">
-                <label class="form-label small">المحتوى (AR)</label>
-                <textarea rows="3" class="form-control" dir="rtl" name="sections[__IDX__][body_ar]"></textarea>
-              </div>
-            </div>
+            </form>
 
-            <div class="row g-2 mt-1">
-              <div class="col-12 col-md-6">
-                <label class="form-label small">Gambar (opsional)</label>
-                <input type="file" class="form-control" name="sections[__IDX__][image]">
-              </div>
-              <div class="col-12 col-md-6">
-                <div class="row g-2">
-                  <div class="col">
-                    <label class="form-label small">Alt (ID)</label>
-                    <input class="form-control" name="sections[__IDX__][image_alt_id]">
-                  </div>
-                  <div class="col">
-                    <label class="form-label small">Alt (EN)</label>
-                    <input class="form-control" name="sections[__IDX__][image_alt_en]">
-                  </div>
-                  <div class="col">
-                    <label class="form-label small">Alt (AR)</label>
-                    <input class="form-control" dir="rtl" name="sections[__IDX__][image_alt_ar]">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </template>
-      </div>
+        </section>
     </div>
-  </div>
 
-  {{-- ====== JS ENHANCEMENTS ====== --}}
-  <script>
-    // Hero preview
-    document.addEventListener('DOMContentLoaded', function () {
-      const input = document.getElementById('heroInput');
-      const preview = document.getElementById('heroPreview');
-      if (input && preview) {
-        input.addEventListener('change', function (e) {
-          const file = e.target.files && e.target.files[0];
-          if (!file) { preview.classList.add('d-none'); preview.removeAttribute('src'); return; }
-          const url = URL.createObjectURL(file);
-          preview.src = url;
-          preview.onload = () => URL.revokeObjectURL(url);
-          preview.classList.remove('d-none');
+    <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+
+    <script>
+        function previewHero(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            document.getElementById('heroPreview').src = URL.createObjectURL(file);
+        }
+
+        function slugify(str) {
+            return (str || '')
+                .toString()
+                .toLowerCase()
+                .trim()
+                .replace(/[\s\_]+/g, '-')
+                .replace(/[^\w\-]+/g, '')
+                .replace(/\-\-+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '');
+        }
+
+        function togglePublishTime() {
+            const st = document.getElementById('statusSelect');
+            const inp = document.getElementById('publishedAt');
+
+            const isPublished = st.value === 'published';
+            inp.disabled = !isPublished;
+
+            if (!isPublished) {
+                inp.value = '';
+            }
+        }
+
+        function syncNewTagsHidden() {
+            const wrap = document.getElementById('tagNewHidden');
+            wrap.innerHTML = '';
+
+            const raw = document.getElementById('tagNewInput').value || '';
+            const items = raw.split(',').map(s => s.trim()).filter(Boolean);
+
+            for (const t of items) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'tag_slugs[]';
+                input.value = t;
+                wrap.appendChild(input);
+            }
+        }
+
+        const toolbarOptions = [
+            [{ header: [1, 2, 3, false] }],
+            [{ size: ['small', false, 'large', 'huge'] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ color: [] }, { background: [] }],
+            [{ align: [] }],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            ['blockquote'],
+            ['link', 'image'],
+            ['clean']
+        ];
+
+        const quill = new Quill('#quillEditor', {
+            theme: 'snow',
+            modules: {
+                toolbar: {
+                    container: toolbarOptions,
+                    handlers: {
+                        image: function () {
+                            selectLocalImageAndUpload();
+                        }
+                    }
+                }
+            }
         });
-      }
-    });
 
-    // Slug generator (sederhana)
-    (function() {
-      const btn = document.getElementById('btnGenSlug');
-      const slugInput = document.getElementById('slugInput');
-      const titleId = document.querySelector('input[name="title_id"]');
-      function slugit(str){
-        return (str||'').toString().toLowerCase()
-          .normalize('NFKD').replace(/[\u0300-\u036f]/g,'')   // remove diacritics
-          .replace(/[^a-z0-9\s-]/g,'')                        // keep alnum & space & hyphen
-          .trim().replace(/\s+/g,'-')                         // spaces -> hyphen
-          .replace(/-+/g,'-').substring(0,120);
-      }
-      if (btn && slugInput) {
-        btn.addEventListener('click', function(){
-          const src = slugInput.value.trim() || (titleId ? titleId.value : '');
-          slugInput.value = slugit(src) || '';
+        async function selectLocalImageAndUpload() {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+
+            input.onchange = async () => {
+                const file = input.files && input.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('image', file);
+
+                const res = await fetch('{{ route('admin.quill.image') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: formData
+                });
+
+                if (!res.ok) {
+                    alert('Upload gambar gagal.');
+                    return;
+                }
+
+                const data = await res.json();
+                if (!data || !data.url) {
+                    alert('Upload gambar gagal (response).');
+                    return;
+                }
+
+                const range = quill.getSelection(true);
+                quill.insertEmbed(range.index, 'image', data.url, 'user');
+                quill.setSelection(range.index + 1);
+            };
+        }
+
+        function syncQuillToHidden() {
+            document.getElementById('contentDelta').value = JSON.stringify(quill.getContents());
+            document.getElementById('contentHtml').value = quill.root.innerHTML;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            togglePublishTime();
+
+            const titleInput = document.getElementById('titleId');
+            const slugPreview = document.getElementById('slugPreview');
+
+            const updateSlugPreview = () => {
+                const s = slugify(titleInput.value);
+                slugPreview.textContent = s || '—';
+            };
+
+            titleInput.addEventListener('input', updateSlugPreview);
+            updateSlugPreview();
+
+            document.getElementById('tagNewInput').addEventListener('input', syncNewTagsHidden);
+            syncNewTagsHidden();
+
+            const oldDelta = @json(old('content_delta'));
+            if (oldDelta && typeof oldDelta === 'object') {
+                try { quill.setContents(oldDelta); } catch (e) {}
+            } else if (typeof oldDelta === 'string' && oldDelta.trim() !== '') {
+                try { quill.setContents(JSON.parse(oldDelta)); } catch (e) {}
+            }
+
+            quill.on('text-change', () => {
+                syncQuillToHidden();
+            });
+
+            syncQuillToHidden();
+
+            document.getElementById('articleCreateForm').addEventListener('submit', () => {
+                syncNewTagsHidden();
+                syncQuillToHidden();
+            });
         });
-      }
-    })();
-
-    // Sections builder
-    (function(){
-      const container  = document.getElementById('sectionsContainer');
-      const btnAdd     = document.getElementById('btnAddSection');
-      const tpl        = document.getElementById('sectionTemplate').innerHTML;
-      const emptyHint  = document.getElementById('emptyHint');
-      let idx = 0;
-
-      function renderNumbers() {
-        const items = container.querySelectorAll('.section-item');
-        items.forEach((el, i) => {
-          el.dataset.index = i;
-          el.querySelector('.sec-number').textContent = i + 1;
-          el.querySelector('.sort-order').value = i;
-          el.querySelectorAll('[name]').forEach(input => {
-            input.name = input.name.replace(/sections\[\d+\]/g, `sections[${i}]`);
-          });
-        });
-        if (emptyHint) emptyHint.classList.toggle('d-none', items.length > 0);
-      }
-
-      function addSection() {
-        const html = tpl.replaceAll('__IDX__', idx).replaceAll('__NUM__', (idx + 1));
-        const node = document.createElement('div');
-        node.innerHTML = html;
-        container.appendChild(node.firstElementChild);
-        idx++;
-        renderNumbers();
-      }
-
-      container.addEventListener('click', function(e){
-        const btn = e.target.closest('button');
-        if (!btn) return;
-        const item = e.target.closest('.section-item');
-        if (!item) return;
-
-        if (btn.classList.contains('btnRemove')) {
-          item.remove(); renderNumbers();
-        }
-        if (btn.classList.contains('btnUp')) {
-          const prev = item.previousElementSibling;
-          if (prev) { container.insertBefore(item, prev); renderNumbers(); }
-        }
-        if (btn.classList.contains('btnDown')) {
-          const next = item.nextElementSibling;
-          if (next) { container.insertBefore(next, item); renderNumbers(); }
-        }
-      });
-
-      container.addEventListener('change', function(e){
-        const sel = e.target;
-        if (sel.tagName === 'SELECT' && sel.name.includes('[type]')) {
-          const item = sel.closest('.section-item');
-          const bodyFields = item.querySelector('.body-fields');
-          bodyFields.style.display = (sel.value === 'image_only') ? 'none' : '';
-        }
-      });
-
-      // default: 1 section
-      btnAdd?.addEventListener('click', addSection);
-      addSection();
-    })();
-
-    // Hot until enable/disable berdasar is_hot
-    (function(){
-      const selHot = document.getElementById('isHotSelect');
-      const hotUntil = document.getElementById('hotUntilInput');
-      function toggleHotUntil(){
-        const active = selHot && selHot.value === '1';
-        if (hotUntil) {
-          hotUntil.disabled = !active;
-          hotUntil.closest('.col-md-3').style.opacity = active ? 1 : .6;
-        }
-      }
-      selHot?.addEventListener('change', toggleHotUntil);
-      toggleHotUntil();
-    })();
-
-    // (Opsional) Tag input sederhana: support enter -> bikin multiple value
-    (function(){
-      const input = document.querySelector('[data-role="tag-input"]');
-      if (!input) return;
-      const wrap = document.createElement('div');
-      wrap.className = 'form-control d-flex flex-wrap gap-2';
-      wrap.style.minHeight = '38px';
-      const store = document.createElement('input');
-      store.type = 'hidden'; store.name = 'tag_slugs[]'; // akan di-clone per chip
-      input.parentNode.insertBefore(wrap, input);
-      input.classList.add('border-0','flex-grow-1'); input.placeholder = input.placeholder || 'ketik slug lalu Enter';
-      wrap.appendChild(input);
-
-      function addChip(slug){
-        slug = (slug||'').trim().toLowerCase().replace(/[^a-z0-9-]/g,'');
-        if (!slug) return;
-        // buat chip
-        const chip = document.createElement('span');
-        chip.className = 'badge rounded-pill bg-light border text-body d-inline-flex align-items-center';
-        chip.textContent = slug + ' ';
-        const x = document.createElement('button');
-        x.type = 'button';
-        x.className = 'btn btn-sm btn-link py-0 px-1';
-        x.innerHTML = '&times;';
-        x.addEventListener('click', ()=> chip.remove());
-        chip.appendChild(x);
-        // hidden input untuk slug ini
-        const h = document.createElement('input');
-        h.type = 'hidden'; h.name = 'tag_slugs[]'; h.value = slug;
-        chip.appendChild(h);
-        wrap.insertBefore(chip, input);
-      }
-
-      input.addEventListener('keydown', function(e){
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          addChip(input.value); input.value = '';
-        }
-      });
-    })();
-  </script>
+    </script>
 </x-page.admin>

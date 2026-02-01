@@ -22,12 +22,10 @@ class ArticleSeeder extends Seeder
             $titleEn = 'Sample School Article ' . $i;
             $titleAr = 'مقالة مدرسية رقم ' . $i;
 
-            // draft / published / archived
             $status = 'published';
             if ($i % 10 === 0) $status = 'archived';
             if ($i % 6 === 0)  $status = 'draft';
 
-            // scheduled implicit: status published + published_at future
             $publishedAt = null;
             if ($status === 'published') {
                 $isScheduled = ($i % 7 === 0);
@@ -39,8 +37,14 @@ class ArticleSeeder extends Seeder
             $isFeatured  = ($i % 3 === 0);
             $pinnedUntil = ($i % 4 === 0) ? Carbon::now()->addDays(rand(2, 7)) : null;
 
-            $delta = $this->makeQuillDelta($titleId);
-            $html  = $this->renderDeltaToHtml($delta);
+            $deltaId = $this->makeQuillDelta($titleId);
+            $htmlId  = $this->renderDeltaToHtml($deltaId);
+
+            $deltaEn = $this->makeQuillDelta($titleEn);
+            $htmlEn  = $this->renderDeltaToHtml($deltaEn);
+
+            $deltaAr = $this->makeQuillDelta($titleAr);
+            $htmlAr  = $this->renderDeltaToHtml($deltaAr);
 
             $article = Article::create([
                 'author_id'     => !empty($userIds) ? $userIds[array_rand($userIds)] : null,
@@ -49,7 +53,6 @@ class ArticleSeeder extends Seeder
                 'title_en'      => $titleEn,
                 'title_ar'      => $titleAr,
 
-                // biarin kosong: auto-generated oleh model
                 'slug'          => null,
 
                 'hero_image'    => 'article/gambar' . (($i - 1) % 6 + 1) . '.jpg',
@@ -58,8 +61,13 @@ class ArticleSeeder extends Seeder
                 'excerpt_en'    => $this->sentence(10),
                 'excerpt_ar'    => 'ملخص قصير: ' . $this->sentence(10),
 
-                'content_delta' => $delta,
-                'content_html'  => $html,
+                'content_delta_id' => $deltaId,
+                'content_delta_en' => $deltaEn,
+                'content_delta_ar' => $deltaAr,
+
+                'content_html_id' => $htmlId,
+                'content_html_en' => $htmlEn,
+                'content_html_ar' => $htmlAr,
 
                 'status'        => $status,
                 'published_at'  => $publishedAt,
@@ -70,17 +78,19 @@ class ArticleSeeder extends Seeder
                 'view_count'    => rand(50, 5000),
                 'comment_count' => 0,
                 'share_count'   => rand(0, 200),
-                'reading_time'  => $this->computeReadingMinutesFromDelta($delta),
+                'reading_time'  => $this->computeReadingMinutes($deltaId, $htmlId),
             ]);
 
             if (!empty($catIds)) {
-                shuffle($catIds);
-                $article->categories()->sync(array_slice($catIds, 0, rand(1, min(2, count($catIds)))));
+                $pick = $catIds;
+                shuffle($pick);
+                $article->categories()->sync(array_slice($pick, 0, rand(1, min(2, count($pick)))));
             }
 
             if (!empty($tagIds)) {
-                shuffle($tagIds);
-                $article->tags()->sync(array_slice($tagIds, 0, rand(2, min(4, count($tagIds)))));
+                $pick = $tagIds;
+                shuffle($pick);
+                $article->tags()->sync(array_slice($pick, 0, rand(2, min(4, count($pick)))));
             }
         }
 
@@ -195,21 +205,29 @@ class ArticleSeeder extends Seeder
         return $html;
     }
 
-    private function computeReadingMinutesFromDelta(array $delta): int
+    private function computeReadingMinutes(?array $delta, ?string $html): int
     {
-        $ops = $delta['ops'] ?? [];
         $text = '';
 
-        foreach ($ops as $op) {
-            $insert = $op['insert'] ?? '';
-            if (is_string($insert)) $text .= ' ' . $insert;
+        if (is_array($delta) && isset($delta['ops']) && is_array($delta['ops'])) {
+            foreach ($delta['ops'] as $op) {
+                $insert = $op['insert'] ?? null;
+                if (is_string($insert)) $text .= ' ' . $insert;
+            }
         }
 
-        $text = str_replace("\n", ' ', $text);
-        $words = str_word_count($text);
-        $wpm = 220;
+        if (trim($text) === '' && is_string($html) && $html !== '') {
+            $text = strip_tags($html);
+        }
 
-        return max(1, (int)ceil($words / $wpm));
+        $text = trim(preg_replace('/\s+/u', ' ', (string)$text));
+        if ($text === '') return 1;
+
+        $words = preg_split('/\s+/u', $text, -1, PREG_SPLIT_NO_EMPTY);
+        $count = is_array($words) ? count($words) : 0;
+
+        $wpm = 220;
+        return max(1, (int)ceil($count / $wpm));
     }
 
     private function refreshTagUseCount(): void
@@ -223,8 +241,6 @@ class ArticleSeeder extends Seeder
             DB::table('tags')->where('id', $tagId)->update(['use_count' => $count]);
         }
     }
-
-    // ---- tiny text generator (tanpa Faker) ----
 
     private function sentence(int $words = 10): string
     {

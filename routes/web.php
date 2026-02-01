@@ -14,68 +14,42 @@ use App\Models\Extracurricular;
 use App\Models\Event;
 use App\Http\Controllers\PpdbPublicController;
 
-// ===== Language switch
 Route::get('/lang/{locale}', function ($locale) {
     if (! in_array($locale, ['en', 'id', 'ar'])) {
         abort(400);
     }
     session()->put('locale', $locale);
-    // Jika tidak ada referer, fallback ke home
     return redirect()->back() ?: redirect()->route('home');
 })->name('lang.switch');
 
-// ===== Sitemap
 Route::get('/sitemap.xml', fn() =>
     response()->view('sitemap')->header('Content-Type','application/xml')
 );
 
-// ===== Articles
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
-Route::get('/articles/{slug}', [ArticleController::class, 'show'])
-    ->where('slug', '[A-Za-z0-9\-]+')
-    ->name('article');
+Route::get('/articles/{slug}', [ArticleController::class, 'show'])->where('slug', '[A-Za-z0-9\-]+')->name('article');
+Route::post('/articles/{articleId}/like', [LikeController::class, 'toggle'])->whereNumber('articleId')->middleware('throttle:30,1')->name('articles.like');
+Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->middleware('throttle:10,1')->name('comments.store');
 
-Route::post('/articles/{articleId}/like', [LikeController::class, 'toggle'])
-    ->whereNumber('articleId')
-    ->middleware('throttle:30,1')
-    ->name('articles.like');
-
-Route::post('/articles/{article}/comments', [CommentController::class, 'store'])
-    ->middleware('throttle:10,1')
-    ->name('comments.store');
-    
-    Route::middleware(['auth', 'can:moderate,App\Models\Comment'])->group(function () {
-    Route::patch('/comments/{comment}/moderate', [CommentController::class, 'moderate'])
-        ->name('comments.moderate');
-});
-
-// ===== Home
 Route::get('/', function () {
     $gallery = GalleryImage::published()->take(12)->get();
     $announcements = Announcement::published()->ordered()->take(9)->get();
     $programs = Program::published()->ordered()->take(8)->get();
     $ekstra = Extracurricular::published()->ordered()->get();
     $events = Event::published()->ordered()->take(6)->get();
-
     return view('welcome', compact('gallery', 'announcements', 'programs', 'ekstra', 'events'));
 })->name('home');
 
-// ===== PUBLIC (guest submit) =====
 Route::get('/ppdb', [PpdbPublicController::class, 'create'])->name('ppdb.create');
 Route::post('/ppdb', [PpdbPublicController::class, 'store'])
     ->middleware('throttle:5,10') // 5 request per 10 menit per IP
     ->name('ppdb.store');
 Route::get('/ppdb/receipt/{code}', [PpdbPublicController::class, 'receipt'])->name('ppdb.receipt');
-
-// token activation
 Route::get('/ppdb/activate/{token}', [PpdbPublicController::class, 'showActivate'])->name('ppdb.activate.show');
 Route::post('/ppdb/activate/{token}', [PpdbPublicController::class, 'activate'])->name('ppdb.activate');
-
-// token edit (hanya untuk rejected)
 Route::get('/ppdb/edit/{token}', [PpdbPublicController::class, 'showEdit'])->name('ppdb.edit.show');
 Route::post('/ppdb/edit/{token}', [PpdbPublicController::class, 'updateEdit'])->name('ppdb.edit.update');
 
-// ===== Dashboard redirector
 Route::get('/dashboard', function (Request $request) {
     $user = $request->user();
     return match ($user->role) {
@@ -85,13 +59,10 @@ Route::get('/dashboard', function (Request $request) {
         default => abort(403),
     };
 })->middleware(['auth', 'verified'])->name('dashboard');
-
-// ===== Profile
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// ===== Authentication & Role-based routes
 require __DIR__.'/auth.php';
