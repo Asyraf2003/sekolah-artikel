@@ -1,78 +1,60 @@
 /* ===============================
-   Custom: Gallery Filter Offcanvas (Dark)
-   File: app-dark.css
+   Custom: Filter Offcanvas (Dark)
+   File: custom-canvas.css
    =============================== */
 
-#filterOffcanvas.offcanvas,
-#filterOffcanvas.offcanvas .offcanvas-header,
-#filterOffcanvas.offcanvas .offcanvas-body {
+.offcanvas.mazer-filter,
+.offcanvas.mazer-filter .offcanvas-header,
+.offcanvas.mazer-filter .offcanvas-body {
   background: #151521;
   color: #e7e7ef;
 }
 
-#filterOffcanvas.offcanvas {
+.offcanvas.mazer-filter {
   border-left: 1px solid rgba(255,255,255,.08);
 }
 
-#filterOffcanvas.offcanvas .offcanvas-header {
+.offcanvas.mazer-filter .offcanvas-header {
   border-bottom: 1px solid rgba(255,255,255,.08);
 }
 
-#filterOffcanvas.offcanvas .text-muted {
+.offcanvas.mazer-filter .text-muted {
   color: rgba(231,231,239,.7) !important;
 }
 
-#filterOffcanvas.offcanvas .form-label {
+.offcanvas.mazer-filter .form-label {
   color: rgba(231,231,239,.9);
 }
 
-#filterOffcanvas.offcanvas .form-control,
-#filterOffcanvas.offcanvas .form-select {
+.offcanvas.mazer-filter .form-control,
+.offcanvas.mazer-filter .form-select {
   background: #10101a;
   color: #e7e7ef;
   border: 1px solid rgba(255,255,255,.12);
 }
 
-#filterOffcanvas.offcanvas .form-control:focus,
-#filterOffcanvas.offcanvas .form-select:focus {
+.offcanvas.mazer-filter .form-control:focus,
+.offcanvas.mazer-filter .form-select:focus {
   outline: 0;
   box-shadow: 0 0 0 .15rem rgba(67, 94, 190, .35);
   border-color: rgba(67, 94, 190, .65);
 }
 
-#filterOffcanvas.offcanvas .form-control::placeholder {
+.offcanvas.mazer-filter .form-control::placeholder {
   color: rgba(231,231,239,.55);
 }
 
-#filterOffcanvas.offcanvas hr {
+.offcanvas.mazer-filter hr {
   border-color: rgba(255,255,255,.10);
   opacity: 1;
 }
 
 /* tombol close bootstrap biar kelihatan di dark */
-#filterOffcanvas.offcanvas .btn-close {
+.offcanvas.mazer-filter .btn-close {
   filter: invert(1) grayscale(100%);
   opacity: .85;
 }
 
-#filterOffcanvas.offcanvas .btn-close:hover {
+.offcanvas.mazer-filter .btn-close:hover {
   opacity: 1;
-}
-
-/* Pastikan body mengambil tinggi penuh */
-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    margin: 0;
-}
-
-/* Bagian konten akan mengambil sisa ruang yang ada */
-main, .main-content { 
-    flex: 1 0 auto;
-}
-
-/* Footer tetap di jalurnya tapi selalu di paling bawah */
-footer {
-    flex-shrink: 0;
 }

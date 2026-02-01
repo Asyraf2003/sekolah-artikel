@@ -25,75 +25,80 @@
       <div class="col-12 col-xxl-9">
 
         {{-- TOP KPIs --}}
-        <div class="row g-3">
-          <div class="col-6 col-lg-3 col-md-6">
-            <div class="card h-100">
-              <div class="card-body px-4 py-4-5">
+        <div class="row">
+    <div class="col-6 col-lg-3 col-md-6">
+        <div class="card">
+            <div class="card-body px-4 py-4-5">
                 <div class="row">
-                  <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start">
-                    <div class="stats-icon purple mb-2"><i class="bi bi-people-fill"></i></div>
-                  </div>
-                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                    <h6 class="text-muted font-semibold">Total Siswa</h6>
-                    <h6 class="font-extrabold mb-0">1.236</h6>
-                    <div class="small text-success">+3.1% bln ini</div>
-                  </div>
+                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start">
+                        <div class="stats-icon purple mb-2">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                        <h6 class="text-muted font-semibold">Total Siswa</h6>
+                        <h6 class="font-extrabold mb-0">{{ number_format($totalSiswa) }}</h6>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-
-          <div class="col-6 col-lg-3 col-md-6">
-            <div class="card h-100">
-              <div class="card-body px-4 py-4-5">
-                <div class="row">
-                  <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start">
-                    <div class="stats-icon blue mb-2"><i class="bi bi-person-badge-fill"></i></div>
-                  </div>
-                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                    <h6 class="text-muted font-semibold">Guru & Staff</h6>
-                    <h6 class="font-extrabold mb-0">87</h6>
-                    <div class="small text-muted">Aktif: 82 • Cuti: 5</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-6 col-lg-3 col-md-6">
-            <div class="card h-100">
-              <div class="card-body px-4 py-4-5">
-                <div class="row">
-                  <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start">
-                    <div class="stats-icon green mb-2"><i class="bi bi-grid-fill"></i></div>
-                  </div>
-                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                    <h6 class="text-muted font-semibold">Rombel/Kelas</h6>
-                    <h6 class="font-extrabold mb-0">36</h6>
-                    <div class="small text-muted">Rasio siswa/kelas: 34.3</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-6 col-lg-3 col-md-6">
-            <div class="card h-100">
-              <div class="card-body px-4 py-4-5">
-                <div class="row">
-                  <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start">
-                    <div class="stats-icon red mb-2"><i class="bi bi-journal-text"></i></div>
-                  </div>
-                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                    <h6 class="text-muted font-semibold">PPDB (Minggu Ini)</h6>
-                    <h6 class="font-extrabold mb-0">58</h6>
-                    <div class="small text-success">+12 dibanding minggu lalu</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
+    </div>
+
+    <div class="col-6 col-lg-3 col-md-6">
+        <div class="card">
+            <div class="card-body px-4 py-4-5">
+                <div class="row">
+                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start">
+                        <div class="stats-icon blue mb-2">
+                            <i class="bi bi-person-badge-fill"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                        <h6 class="text-muted font-semibold">Guru & Staff</h6>
+                        <h6 class="font-extrabold mb-0">{{ number_format($totalGuru) }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3 col-md-6">
+        <div class="card">
+            <div class="card-body px-4 py-4-5">
+                <div class="row">
+                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start">
+                        <div class="stats-icon green mb-2">
+                            <i class="bi bi-journal-text"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                        <h6 class="text-muted font-semibold">Total Artikel</h6>
+                        <h6 class="font-extrabold mb-0">{{ number_format($totalArtikel) }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3 col-md-6">
+        <div class="card">
+            <div class="card-body px-4 py-4-5">
+                <div class="row">
+                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start">
+                        <div class="stats-icon red mb-2">
+                            <i class="bi bi-images"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                        <h6 class="text-muted font-semibold">Jumlah Galeri</h6>
+                        <h6 class="font-extrabold mb-0">{{ number_format($totalGaleri) }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
       </div>
 

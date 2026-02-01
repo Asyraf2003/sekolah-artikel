@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\GalleryImage;
+use App\Models\Article;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\DB;  
 
 class AdminController extends Controller
 {
@@ -19,8 +22,19 @@ class AdminController extends Controller
     public function index()
     {
         $this->authorize('viewAny', User::class);
-        $users = User::all();
-        return view('admin.dashboard', compact('users'));
+
+        $totalSiswa = User::where('role', 'user')->count();
+        $totalGuru  = User::where('role', 'other')->count();
+
+        $totalArtikel = Article::count();
+        $totalGaleri  = DB::table('gallery_images')->count();
+
+        return view('admin.dashboard', compact(
+            'totalSiswa',
+            'totalGuru',
+            'totalArtikel',
+            'totalGaleri'
+        ));
     }
 
     public function show(User $user)

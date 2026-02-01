@@ -9,8 +9,8 @@ class OtherController extends Controller
 {
     public function index()
     {
-        $others = User::where('role','other')->orderByDesc('id')->paginate(10);
-        return view('admin.other.index', compact('others'));
+        $users = User::where('role','other')->orderByDesc('id')->paginate(10);
+        return view('admin.other.index', compact('users'));
     }
 
     public function destroy(User $user)
