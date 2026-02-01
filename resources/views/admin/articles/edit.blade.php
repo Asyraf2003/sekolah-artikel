@@ -36,7 +36,12 @@
         $selectedTagIds = old('tag_ids', $article->tags->pluck('id')->all());
     @endphp
 
+    @push('styles')
     <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
+    <style>
+    #quillEditor .ql-editor { min-height: 320px; }
+    </style>
+    @endpush
 
     <div class="page-heading">
         <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
@@ -182,18 +187,38 @@
                                 <div class="fw-semibold">
                                     <i class="bi bi-pencil-square me-1"></i> Isi Artikel
                                 </div>
-                                <div class="small text-muted">Quill editor.</div>
+                                <div class="small text-muted">Quill editor (ID / EN / AR).</div>
                             </div>
 
                             <div class="card-body">
-                                <div id="quillToolbar" class="mb-2"></div>
-                                <div id="quillEditor" style="min-height: 320px;" class="bg-white"></div>
+                                <div id="quillEditor" class="bg-white"></div>
 
-                                <input type="hidden" name="content_delta" id="contentDelta">
-                                <input type="hidden" name="content_html" id="contentHtml">
+                                {{-- Hidden inputs per bahasa (WAJIB) --}}
+                                <input type="hidden" name="content_delta_id" id="contentDeltaId"
+                                    value="{{ old('content_delta_id', $article->content_delta_id ? json_encode($article->content_delta_id) : '') }}">
+                                <input type="hidden" name="content_html_id" id="contentHtmlId"
+                                    value="{{ old('content_html_id', $article->content_html_id ?? '') }}">
 
-                                @error('content_delta') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
-                                @error('content_html') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+                                <input type="hidden" name="content_delta_en" id="contentDeltaEn"
+                                    value="{{ old('content_delta_en', $article->content_delta_en ? json_encode($article->content_delta_en) : '') }}">
+                                <input type="hidden" name="content_html_en" id="contentHtmlEn"
+                                    value="{{ old('content_html_en', $article->content_html_en ?? '') }}">
+
+                                <input type="hidden" name="content_delta_ar" id="contentDeltaAr"
+                                    value="{{ old('content_delta_ar', $article->content_delta_ar ? json_encode($article->content_delta_ar) : '') }}">
+                                <input type="hidden" name="content_html_ar" id="contentHtmlAr"
+                                    value="{{ old('content_html_ar', $article->content_html_ar ?? '') }}">
+
+                                @error('content_delta_id') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+                                @error('content_html_id')  <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+                                @error('content_delta_en') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+                                @error('content_html_en')  <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+                                @error('content_delta_ar') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+                                @error('content_html_ar')  <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+
+                                <div class="form-text mt-2">
+                                    Konten body mengikuti tab bahasa di atas (ID/EN/AR). Image upload via endpoint admin.quill.image.
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -327,161 +352,227 @@
         </section>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+<script>
+(function () {
+    function previewHero(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const img = document.getElementById('heroPreview');
+        if (img) img.src = URL.createObjectURL(file);
+    }
+    window.previewHero = previewHero;
 
-    <script>
-        function previewHero(event) {
-            const file = event.target.files && event.target.files[0];
-            if (!file) return;
-            document.getElementById('heroPreview').src = URL.createObjectURL(file);
+    function slugify(str) {
+        return (str || '')
+            .toString()
+            .toLowerCase()
+            .trim()
+            .replace(/[\s\_]+/g, '-')
+            .replace(/[^\w\-]+/g, '')
+            .replace(/\-\-+/g, '-')
+            .replace(/^-+/, '')
+            .replace(/-+$/, '');
+    }
+
+    function togglePublishTime() {
+        const st = document.getElementById('statusSelect');
+        const inp = document.getElementById('publishedAt');
+        if (!st || !inp) return;
+
+        const isPublished = st.value === 'published';
+        inp.disabled = !isPublished;
+        if (!isPublished) inp.value = '';
+    }
+    window.togglePublishTime = togglePublishTime;
+
+    function syncNewTagsHidden() {
+        const wrap = document.getElementById('tagNewHidden');
+        const input = document.getElementById('tagNewInput');
+        if (!wrap || !input) return;
+
+        wrap.innerHTML = '';
+        const raw = input.value || '';
+        const items = raw.split(',').map(s => s.trim()).filter(Boolean);
+
+        for (const t of items) {
+            const el = document.createElement('input');
+            el.type = 'hidden';
+            el.name = 'tag_slugs[]';
+            el.value = t;
+            wrap.appendChild(el);
         }
+    }
 
-        function slugify(str) {
-            return (str || '')
-                .toString()
-                .toLowerCase()
-                .trim()
-                .replace(/[\s\_]+/g, '-')
-                .replace(/[^\w\-]+/g, '')
-                .replace(/\-\-+/g, '-')
-                .replace(/^-+/, '')
-                .replace(/-+$/, '');
-        }
+    const tabButtons = document.querySelectorAll('#langTabs [data-bs-toggle="tab"]');
 
-        function togglePublishTime() {
-            const st = document.getElementById('statusSelect');
-            const inp = document.getElementById('publishedAt');
+    const elDelta = {
+        id: document.getElementById('contentDeltaId'),
+        en: document.getElementById('contentDeltaEn'),
+        ar: document.getElementById('contentDeltaAr'),
+    };
+    const elHtml = {
+        id: document.getElementById('contentHtmlId'),
+        en: document.getElementById('contentHtmlEn'),
+        ar: document.getElementById('contentHtmlAr'),
+    };
 
-            const isPublished = st.value === 'published';
-            inp.disabled = !isPublished;
+    if (!document.getElementById('quillEditor') || !elDelta.id || !elHtml.id) {
+        console.warn('Quill elements missing. Pastikan #quillEditor dan hidden inputs contentDelta*/contentHtml* ada.');
+        return;
+    }
 
-            if (!isPublished) {
-                inp.value = '';
-            }
-        }
+    let activeLang = 'id';
 
-        function syncNewTagsHidden() {
-            const wrap = document.getElementById('tagNewHidden');
-            wrap.innerHTML = '';
+    const toolbarOptions = [
+        [{ header: [1, 2, 3, false] }],
+        [{ size: ['small', false, 'large', 'huge'] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ color: [] }, { background: [] }],
+        [{ align: [] }],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['blockquote'],
+        ['link', 'image'],
+        ['clean']
+    ];
 
-            const raw = document.getElementById('tagNewInput').value || '';
-            const items = raw.split(',').map(s => s.trim()).filter(Boolean);
-
-            for (const t of items) {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'tag_slugs[]';
-                input.value = t;
-                wrap.appendChild(input);
-            }
-        }
-
-        const toolbarOptions = [
-            [{ header: [1, 2, 3, false] }],
-            [{ size: ['small', false, 'large', 'huge'] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ color: [] }, { background: [] }],
-            [{ align: [] }],
-            [{ list: 'ordered' }, { list: 'bullet' }],
-            ['blockquote'],
-            ['link', 'image'],
-            ['clean']
-        ];
-
-        const quill = new Quill('#quillEditor', {
-            theme: 'snow',
-            modules: {
-                toolbar: {
-                    container: toolbarOptions,
-                    handlers: {
-                        image: function () {
-                            selectLocalImageAndUpload();
-                        }
+    const quill = new Quill('#quillEditor', {
+        theme: 'snow',
+        modules: {
+            toolbar: {
+                container: toolbarOptions,
+                handlers: {
+                    image: function () {
+                        selectLocalImageAndUpload();
                     }
                 }
             }
-        });
+        }
+    });
 
-        async function selectLocalImageAndUpload() {
-            const input = document.createElement('input');
-            input.setAttribute('type', 'file');
-            input.setAttribute('accept', 'image/*');
-            input.click();
+    function setDir(lang) {
+        const rtl = (lang === 'ar');
+        quill.root.setAttribute('dir', rtl ? 'rtl' : 'ltr');
+        quill.root.style.textAlign = rtl ? 'right' : 'left';
+    }
 
-            input.onchange = async () => {
-                const file = input.files && input.files[0];
-                if (!file) return;
+    function saveLang(lang) {
+        const delta = quill.getContents();
+        const html = quill.root.innerHTML;
 
-                const formData = new FormData();
-                formData.append('image', file);
+        if (elDelta[lang]) elDelta[lang].value = JSON.stringify(delta);
+        if (elHtml[lang])  elHtml[lang].value  = html;
+    }
 
-                const res = await fetch('{{ route('admin.quill.image') }}', {
+    function loadLang(lang) {
+        setDir(lang);
+
+        const raw = (elDelta[lang] ? elDelta[lang].value : '') || '';
+        if (raw.trim() !== '') {
+            try {
+                quill.setContents(JSON.parse(raw));
+                return;
+            } catch (e) {
+                // fallback to html below
+            }
+        }
+
+        const html = (elHtml[lang] ? elHtml[lang].value : '') || '';
+        if (html.trim() !== '') {
+            quill.root.innerHTML = html;
+            return;
+        }
+
+        quill.setText('');
+    }
+
+    async function selectLocalImageAndUpload() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.click();
+
+        input.onchange = async () => {
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            let res;
+            try {
+                res = await fetch("{{ route('admin.quill.image') }}", {
                     method: 'POST',
-                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
                     body: formData
                 });
+            } catch (e) {
+                alert('Gagal konek saat upload gambar.');
+                return;
+            }
 
-                if (!res.ok) {
-                    alert('Upload gambar gagal.');
-                    return;
-                }
+            if (!res.ok) {
+                alert('Upload gambar gagal.');
+                return;
+            }
 
-                const data = await res.json();
-                if (!data || !data.url) {
-                    alert('Upload gambar gagal (response).');
-                    return;
-                }
+            const data = await res.json().catch(() => null);
+            if (!data || !data.url) {
+                alert('Upload gambar gagal (response tidak valid).');
+                return;
+            }
 
-                const range = quill.getSelection(true);
-                quill.insertEmbed(range.index, 'image', data.url, 'user');
-                quill.setSelection(range.index + 1);
-            };
-        }
+            const range = quill.getSelection(true);
+            quill.insertEmbed(range.index, 'image', data.url, 'user');
+            quill.setSelection(range.index + 1);
+        };
+    }
 
-        function syncQuillToHidden() {
-            document.getElementById('contentDelta').value = JSON.stringify(quill.getContents());
-            document.getElementById('contentHtml').value = quill.root.innerHTML;
-        }
+    document.addEventListener('DOMContentLoaded', () => {
+        togglePublishTime();
 
-        document.addEventListener('DOMContentLoaded', () => {
-            togglePublishTime();
-
-            const titleInput = document.getElementById('titleId');
-            const slugPreview = document.getElementById('slugPreview');
+        const titleInput = document.getElementById('titleId');
+        const slugPreview = document.getElementById('slugPreview');
+        if (titleInput && slugPreview) {
             const updateSlugPreview = () => {
                 const s = slugify(titleInput.value);
                 slugPreview.textContent = s || '—';
             };
             titleInput.addEventListener('input', updateSlugPreview);
             updateSlugPreview();
+        }
 
-            document.getElementById('tagNewInput').addEventListener('input', syncNewTagsHidden);
+        const tagInput = document.getElementById('tagNewInput');
+        if (tagInput) {
+            tagInput.addEventListener('input', syncNewTagsHidden);
             syncNewTagsHidden();
+        }
 
-            const initialDelta = @json(old('content_delta')) ?? @json($article->content_delta);
-            const initialHtml  = @json(old('content_html')) ?? @json($article->content_html);
+        // init editor with active lang (ID)
+        loadLang(activeLang);
 
-            if (initialDelta) {
-                try {
-                    if (typeof initialDelta === 'string') {
-                        quill.setContents(JSON.parse(initialDelta));
-                    } else {
-                        quill.setContents(initialDelta);
-                    }
-                } catch (e) {}
-            } else if (initialHtml) {
-                try {
-                    quill.root.innerHTML = initialHtml;
-                } catch (e) {}
-            }
+        // switch language: save current, load next
+        tabButtons.forEach(btn => {
+            btn.addEventListener('shown.bs.tab', (ev) => {
+                const target = ev.target.getAttribute('data-bs-target');
+                const nextLang = target === '#pane-en' ? 'en' : (target === '#pane-ar' ? 'ar' : 'id');
 
-            quill.on('text-change', () => syncQuillToHidden());
-            syncQuillToHidden();
-
-            document.getElementById('articleEditForm').addEventListener('submit', () => {
-                syncNewTagsHidden();
-                syncQuillToHidden();
+                saveLang(activeLang);
+                activeLang = nextLang;
+                loadLang(activeLang);
             });
         });
-    </script>
+
+        const form = document.getElementById('articleEditForm');
+        if (form) {
+            form.addEventListener('submit', () => {
+                saveLang(activeLang);
+                syncNewTagsHidden();
+            });
+        }
+    });
+})();
+</script>
+@endpush
 </x-page.admin>

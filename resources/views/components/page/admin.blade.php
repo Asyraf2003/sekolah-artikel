@@ -4,29 +4,24 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {{-- Judul fallback ke APP_NAME --}}
     <title>@yield('title', config('app.name', 'Laravel'))</title>
 
-    {{-- Keamanan --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- SEO ringan --}}
     <meta name="description" content="@yield('meta_description', 'Dashboard')">
     <link rel="canonical" href="{{ url()->current() }}">
 
-    {{-- Favicon (pakai salah satu yang konsisten) --}}
     <link rel="icon" type="image/svg+xml" href="{{ asset('assets/compiled/svg/favicon.svg') }}">
     <link rel="alternate icon" type="image/png" href="{{ asset('assets/compiled/img/favicon-32x32.png') }}">
     <link rel="stylesheet" href="{{ asset('assets/compiled/css/custom-canvas.css') }}?v={{ filemtime(public_path('assets/compiled/css/custom-canvas.css')) }}">
 
-    {{-- Warna UI browser (sesuaikan brand) --}}
     <meta name="theme-color" content="#0ea5e9">
 
-    {{-- Styles: otomatis pilih light/dark --}}
     <link rel="stylesheet" href="{{ asset('assets/compiled/css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/compiled/css/app-dark.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/compiled/css/iconly.css') }}">
 
+    @stack('styles')
 </head>
 
 <body>
@@ -171,11 +166,9 @@
     <script src="{{ asset('assets/static/js/components/dark.js') }}"></script>
     <script src="{{ asset('assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
     <script src="{{ asset('assets/compiled/js/app.js') }}"></script>
-
-    <!-- Need: Apexcharts -->
     <script src="{{ asset('assets/extensions/apexcharts/apexcharts.min.js') }}"></script>
-
     <script src="{{ asset('assets/static/js/pages/dashboard.js') }}"></script>
+
     @stack('scripts')
 </body>
 
