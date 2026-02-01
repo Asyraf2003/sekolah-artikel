@@ -12,6 +12,8 @@ class ArticleLikeSeeder extends Seeder
         $articles = Article::published()->get();
         $users    = User::pluck('id')->all();
 
+        if (empty($users)) return;
+
         foreach ($articles as $a) {
             $likers = collect($users)->shuffle()->take(rand(1, min(8, count($users))));
             foreach ($likers as $uid) {

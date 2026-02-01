@@ -3,113 +3,87 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Models\{Article, ArticleSection, Category, Tag, User};
+use App\Models\{Article, Category, Tag, User};
 
 class ArticleSeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = \Faker\Factory::create('id_ID');
-
         $userIds = User::pluck('id')->all();
         $catIds  = Category::pluck('id')->all();
         $tagIds  = Tag::pluck('id')->all();
 
         $total = 12;
+
         for ($i = 1; $i <= $total; $i++) {
             $titleId = $this->judulSekolah($i);
-            $titleEn = 'Sample School Article '.$i;
-            $titleAr = 'مقالة مدرسية رقم '.$i;
+            $titleEn = 'Sample School Article ' . $i;
+            $titleAr = 'مقالة مدرسية رقم ' . $i;
 
-            $slugBase = Str::slug($titleId);
-            $slug = $slugBase;
-            $n = 2;
-            while (Article::withTrashed()->where('slug', $slug)->exists()) {
-                $slug = $slugBase.'-'.$n++;
+            // draft / published / archived
+            $status = 'published';
+            if ($i % 10 === 0) $status = 'archived';
+            if ($i % 6 === 0)  $status = 'draft';
+
+            // scheduled implicit: status published + published_at future
+            $publishedAt = null;
+            if ($status === 'published') {
+                $isScheduled = ($i % 7 === 0);
+                $publishedAt = $isScheduled
+                    ? Carbon::now()->addDays(rand(1, 7))
+                    : Carbon::now()->subDays(rand(0, 10));
             }
 
-            $status = $i % 7 === 0 ? 'scheduled' : 'published';
-            $isHot = $i % 5 === 0;
-            $isFeatured = $i % 3 === 0;
+            $isFeatured  = ($i % 3 === 0);
+            $pinnedUntil = ($i % 4 === 0) ? Carbon::now()->addDays(rand(2, 7)) : null;
 
-            $publishedAt = $status === 'published'
-                ? Carbon::now()->subDays(rand(0, 10))
-                : null;
-
-            $scheduledFor = $status === 'scheduled'
-                ? Carbon::now()->addDays(rand(1, 7))
-                : null;
+            $delta = $this->makeQuillDelta($titleId);
+            $html  = $this->renderDeltaToHtml($delta);
 
             $article = Article::create([
-                'author_id'    => $faker->randomElement($userIds),
-                'title_id'     => $titleId,
-                'title_en'     => $titleEn,
-                'title_ar'     => $titleAr,
-                'slug'         => $slug,
-                'hero_image'   => 'article/gambar'.(($i-1)%6+1).'.jpg',
-                'excerpt_id'   => 'Ringkasan singkat: '.$faker->sentence(10),
-                'excerpt_en'   => $faker->sentence(10),
-                'excerpt_ar'   => 'ملخص قصير: '.$faker->sentence(10),
+                'author_id'     => !empty($userIds) ? $userIds[array_rand($userIds)] : null,
 
-                'meta_title_id'=> $titleId,
-                'meta_title_en'=> $titleEn,
-                'meta_title_ar'=> $titleAr,
-                'meta_desc_id' => $faker->sentence(18),
-                'meta_desc_en' => $faker->sentence(18),
-                'meta_desc_ar' => $faker->sentence(18),
+                'title_id'      => $titleId,
+                'title_en'      => $titleEn,
+                'title_ar'      => $titleAr,
 
-                'is_published' => $status === 'published',
-                'status'       => $status,
-                'published_at' => $publishedAt,
-                'scheduled_for'=> $scheduledFor,
+                // biarin kosong: auto-generated oleh model
+                'slug'          => null,
 
-                'is_featured'  => $isFeatured,
-                'is_hot'       => $isHot,
-                'hot_until'    => $isHot ? Carbon::now()->addDays(5) : null,
-                'pinned_until' => null,
+                'hero_image'    => 'article/gambar' . (($i - 1) % 6 + 1) . '.jpg',
 
-                'view_count'   => rand(50, 5000),
-                'comment_count'=> 0,
-                'share_count'  => rand(0, 200),
-                'reading_time' => 0,
+                'excerpt_id'    => 'Ringkasan singkat: ' . $this->sentence(10),
+                'excerpt_en'    => $this->sentence(10),
+                'excerpt_ar'    => 'ملخص قصير: ' . $this->sentence(10),
+
+                'content_delta' => $delta,
+                'content_html'  => $html,
+
+                'status'        => $status,
+                'published_at'  => $publishedAt,
+
+                'is_featured'   => $isFeatured,
+                'pinned_until'  => $pinnedUntil,
+
+                'view_count'    => rand(50, 5000),
+                'comment_count' => 0,
+                'share_count'   => rand(0, 200),
+                'reading_time'  => $this->computeReadingMinutesFromDelta($delta),
             ]);
 
-            // Sections
-            $secCount = rand(3, 5);
-            for ($s = 0; $s < $secCount; $s++) {
-                $type = ['paragraph','paragraph','paragraph','quote','image_only'][array_rand([0,1,2,3,4])];
-
-                ArticleSection::create([
-                    'article_id'   => $article->id,
-                    'type'         => $type,
-                    'body_id'      => $type !== 'image_only' ? $faker->paragraphs(rand(2,3), true) : null,
-                    'body_en'      => $type !== 'image_only' ? $faker->paragraphs(rand(2,3), true) : null,
-                    'body_ar'      => $type !== 'image_only' ? $faker->paragraphs(rand(2,3), true) : null,
-                    'image_path'   => $type === 'image_only' ? 'article/sections/sec'.rand(1,6).'.jpg' : null,
-                    'image_alt_id' => $type === 'image_only' ? 'Kegiatan sekolah' : null,
-                    'image_alt_en' => $type === 'image_only' ? 'School activity' : null,
-                    'image_alt_ar' => $type === 'image_only' ? 'فعالية مدرسية' : null,
-                    'sort_order'   => $s,
-                ]);
+            if (!empty($catIds)) {
+                shuffle($catIds);
+                $article->categories()->sync(array_slice($catIds, 0, rand(1, min(2, count($catIds)))));
             }
 
-            // Kategori (1-2)
-            $attachCats = collect($catIds)->shuffle()->take(rand(1,2))->values()->all();
-            $article->categories()->sync($attachCats);
-
-            // Tag (2-4)
-            $attachTags = collect($tagIds)->shuffle()->take(rand(2,4))->values()->all();
-            $article->tags()->sync($attachTags);
-
-            // Hitung reading_time dari isi
-            $article->reading_time = $this->computeReadingMinutes($article->id);
-            $article->save();
+            if (!empty($tagIds)) {
+                shuffle($tagIds);
+                $article->tags()->sync(array_slice($tagIds, 0, rand(2, min(4, count($tagIds)))));
+            }
         }
 
-        // Update use_count tag berdasar pivot
         $this->refreshTagUseCount();
     }
 
@@ -129,20 +103,112 @@ class ArticleSeeder extends Seeder
             'Workshop Kesehatan Remaja',
             'Kunjungan Industri Teknologi'
         ];
-        return $judul[($i-1) % count($judul)];
+        return $judul[($i - 1) % count($judul)];
     }
 
-    private function computeReadingMinutes(int $articleId): int
+    private function makeQuillDelta(string $title): array
     {
-        $sections = ArticleSection::where('article_id', $articleId)->get();
-        $text = '';
-        foreach ($sections as $sec) {
-            $text .= ' '.strip_tags($sec->body_id ?? '');
-            $text .= ' '.strip_tags($sec->body_en ?? '');
-            $text .= ' '.strip_tags($sec->body_ar ?? '');
+        $ops = [];
+
+        $ops[] = ['insert' => $title];
+        $ops[] = ['insert' => "\n", 'attributes' => ['header' => 2]];
+        $ops[] = ['insert' => "\n"];
+
+        $paraCount = rand(3, 5);
+        for ($k = 0; $k < $paraCount; $k++) {
+            $ops[] = ['insert' => $this->paragraph(rand(2, 4)) . "\n"];
+            $ops[] = ['insert' => "\n"];
         }
+
+        $ops[] = ['insert' => "Catatan: konten ini dummy buat testing Quill, bukan wahyu.\n", 'attributes' => ['blockquote' => true]];
+        $ops[] = ['insert' => "\n"];
+
+        $ops[] = ['insert' => "Poin penting 1\n", 'attributes' => ['list' => 'bullet']];
+        $ops[] = ['insert' => "Poin penting 2\n", 'attributes' => ['list' => 'bullet']];
+        $ops[] = ['insert' => "Poin penting 3\n", 'attributes' => ['list' => 'bullet']];
+
+        return ['ops' => $ops];
+    }
+
+    private function renderDeltaToHtml(array $delta): string
+    {
+        $ops = $delta['ops'] ?? [];
+        $html = '';
+        $buffer = '';
+        $ulOpen = false;
+
+        $flushP = function () use (&$html, &$buffer, &$ulOpen) {
+            $text = trim($buffer);
+            if ($text !== '') {
+                if ($ulOpen) { $html .= '</ul>'; $ulOpen = false; }
+                $html .= '<p>' . e($text) . '</p>';
+            }
+            $buffer = '';
+        };
+
+        foreach ($ops as $op) {
+            $insert = $op['insert'] ?? '';
+            $attr   = $op['attributes'] ?? [];
+
+            if ($insert === "\n") {
+                if (isset($attr['header'])) {
+                    $level = max(1, min(6, (int)$attr['header']));
+                    $text = trim($buffer);
+                    if ($text !== '') {
+                        if ($ulOpen) { $html .= '</ul>'; $ulOpen = false; }
+                        $html .= "<h{$level}>" . e($text) . "</h{$level}>";
+                    }
+                    $buffer = '';
+                    continue;
+                }
+
+                if (!empty($attr['blockquote'])) {
+                    $text = trim($buffer);
+                    if ($text !== '') {
+                        if ($ulOpen) { $html .= '</ul>'; $ulOpen = false; }
+                        $html .= '<blockquote>' . e($text) . '</blockquote>';
+                    }
+                    $buffer = '';
+                    continue;
+                }
+
+                if (($attr['list'] ?? null) === 'bullet') {
+                    $text = trim($buffer);
+                    if ($text !== '') {
+                        if (!$ulOpen) { $html .= '<ul>'; $ulOpen = true; }
+                        $html .= '<li>' . e($text) . '</li>';
+                    }
+                    $buffer = '';
+                    continue;
+                }
+
+                $flushP();
+                continue;
+            }
+
+            if (is_string($insert)) $buffer .= $insert;
+        }
+
+        $flushP();
+        if ($ulOpen) $html .= '</ul>';
+
+        return $html;
+    }
+
+    private function computeReadingMinutesFromDelta(array $delta): int
+    {
+        $ops = $delta['ops'] ?? [];
+        $text = '';
+
+        foreach ($ops as $op) {
+            $insert = $op['insert'] ?? '';
+            if (is_string($insert)) $text .= ' ' . $insert;
+        }
+
+        $text = str_replace("\n", ' ', $text);
         $words = str_word_count($text);
         $wpm = 220;
+
         return max(1, (int)ceil($words / $wpm));
     }
 
@@ -156,5 +222,35 @@ class ArticleSeeder extends Seeder
         foreach ($rows as $tagId => $count) {
             DB::table('tags')->where('id', $tagId)->update(['use_count' => $count]);
         }
+    }
+
+    // ---- tiny text generator (tanpa Faker) ----
+
+    private function sentence(int $words = 10): string
+    {
+        $pool = $this->wordPool();
+        shuffle($pool);
+        $words = max(3, min($words, count($pool)));
+        $s = implode(' ', array_slice($pool, 0, $words));
+        return ucfirst($s) . '.';
+    }
+
+    private function paragraph(int $sentences = 3): string
+    {
+        $sentences = max(1, $sentences);
+        $parts = [];
+        for ($i = 0; $i < $sentences; $i++) {
+            $parts[] = $this->sentence(rand(8, 14));
+        }
+        return implode(' ', $parts);
+    }
+
+    private function wordPool(): array
+    {
+        return [
+            'sekolah','siswa','guru','belajar','program','kegiatan','prestasi','kompetisi','pelatihan','literasi',
+            'teknologi','kelas','kurikulum','projek','kolaborasi','inovasi','kreatif','komunitas','disiplin','motivasi',
+            'pembelajaran','praktik','materi','evaluasi','pengembangan','minat','bakat','olahraga','seni','sains',
+        ];
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ArticleLike extends Model
 {
     protected $fillable = [
-        'article_id','user_id','fingerprint',
+        'article_id', 'user_id', 'fingerprint',
     ];
 
     protected $casts = [

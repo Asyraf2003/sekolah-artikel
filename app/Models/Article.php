@@ -4,8 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Category;
-use App\Models\Tag;
+use Illuminate\Support\Str;
 
 class Article extends Model
 {
@@ -14,39 +13,33 @@ class Article extends Model
     protected $fillable = [
         'author_id',
         'title_id', 'title_en', 'title_ar',
-        'slug', 'hero_image',
+        'slug',
+        'hero_image',
         'excerpt_id', 'excerpt_en', 'excerpt_ar',
-        'meta_title_id','meta_title_en','meta_title_ar',
-        'meta_desc_id','meta_desc_en','meta_desc_ar',
-        'is_published', 'status', 'published_at', 'scheduled_for',
-        'is_featured','is_hot','hot_until','pinned_until',
-        'view_count','comment_count','share_count','reading_time',
+        'content_delta',
+        'content_html',
+        'status',
+        'published_at',
+        'is_featured',
+        'pinned_until',
+        'view_count', 'comment_count', 'share_count', 'reading_time',
     ];
 
     protected $casts = [
-        'is_published'  => 'bool',
-        'is_featured'   => 'bool',
-        'is_hot'        => 'bool',
-        'published_at'  => 'datetime',
-        'scheduled_for' => 'datetime',
-        'hot_until'     => 'datetime',
-        'pinned_until'  => 'datetime',
-        'view_count'    => 'integer',
-        'comment_count' => 'integer',
-        'share_count'   => 'integer',
-        'reading_time'  => 'integer',
+        'content_delta'  => 'array',
+        'published_at'   => 'datetime',
+        'pinned_until'   => 'datetime',
+        'is_featured'    => 'bool',
+        'view_count'     => 'integer',
+        'comment_count'  => 'integer',
+        'share_count'    => 'integer',
+        'reading_time'   => 'integer',
     ];
 
     /** RELATIONS */
     public function author()
     {
         return $this->belongsTo(User::class, 'author_id');
-    }
-
-    public function sections()
-    {
-        return $this->hasMany(ArticleSection::class)
-            ->orderBy('sort_order')->orderBy('id');
     }
 
     public function comments()
@@ -59,12 +52,30 @@ class Article extends Model
         return $this->hasMany(ArticleLike::class);
     }
 
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'article_category', 'article_id', 'category_id');
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'article_tag', 'article_id', 'tag_id');
+    }
+
     /** SCOPES */
     public function scopePublished($q)
     {
-        return $q->where('status','published')
-                 ->whereNotNull('published_at')
-                 ->where('published_at','<=', now());
+        return $q->where('status', 'published')
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
+    }
+
+    // “Scheduled” implicit: status published tapi tanggalnya masih masa depan
+    public function scopeScheduled($q)
+    {
+        return $q->where('status', 'published')
+            ->whereNotNull('published_at')
+            ->where('published_at', '>', now());
     }
 
     public function scopeRecent($q)
@@ -77,13 +88,12 @@ class Article extends Model
         return $q->published()->where('is_featured', true);
     }
 
-    public function scopeHot($q)
+    public function scopePinned($q)
     {
         return $q->published()
-                 ->where('is_hot', true)
-                 ->where(function($qq){
-                     $qq->whereNull('hot_until')->orWhere('hot_until','>=', now());
-                 });
+            ->where(function ($qq) {
+                $qq->whereNull('pinned_until')->orWhere('pinned_until', '>=', now());
+            });
     }
 
     public function scopeTop($q)
@@ -93,34 +103,24 @@ class Article extends Model
 
     public function scopeSearchTitle($q, string $term)
     {
-        return $q->whereFullText(['title_id','title_en','title_ar','slug'], $term);
+        return $q->whereFullText([
+            'title_id', 'title_en', 'title_ar',
+            'slug',
+            'excerpt_id', 'excerpt_en', 'excerpt_ar',
+        ], $term);
     }
 
-    /** HELPERS (fallback judul) */
+    /** HELPERS */
     public function titleFor(?string $locale = null): string
     {
         $locale = $locale ?: app()->getLocale();
+
         return $this->firstNonEmptyString(
             $this->{"title_{$locale}"} ?? null,
             $this->title_id ?? null,
             $this->title_en ?? null,
             $this->title_ar ?? null,
         ) ?? '';
-    }
-
-    protected static function booted(): void
-    {
-        static::deleting(function (Article $article) {
-            if ($article->isForceDeleting()) {
-                $article->sections()->withTrashed()->forceDelete();
-            } else {
-                $article->sections()->delete();
-            }
-        });
-
-        static::restoring(function (Article $article) {
-            $article->sections()->withTrashed()->restore();
-        });
     }
 
     protected function firstNonEmptyString(?string ...$values): ?string
@@ -131,13 +131,48 @@ class Article extends Model
         return null;
     }
 
-    public function categories()
+    /** SLUG AUTO */
+    protected static function booted(): void
     {
-        return $this->belongsToMany(Category::class, 'article_category', 'article_id', 'category_id');
+        static::saving(function (Article $article) {
+            // slug dibuat kalau kosong (create/update). Tidak auto-regenerate kalau sudah ada.
+            if (blank($article->slug)) {
+                $baseTitle = $article->titleFor('id') ?: $article->titleFor('en') ?: 'article';
+                $article->slug = static::generateUniqueSlug($baseTitle, $article->id);
+            }
+
+            // Normalisasi kecil biar ga banyak state absurd:
+            if ($article->status !== 'published') {
+                // Kalau bukan published, published_at jangan dipakai.
+                $article->published_at = null;
+            }
+
+            if ($article->status === 'published' && is_null($article->published_at)) {
+                // Publish tanpa tanggal? ya sudah sekarang.
+                $article->published_at = now();
+            }
+        });
     }
 
-    public function tags()
+    protected static function generateUniqueSlug(string $title, ?int $ignoreId = null): string
     {
-        return $this->belongsToMany(Tag::class, 'article_tag', 'article_id', 'tag_id');
+        $slug = Str::slug($title);
+        if ($slug === '') $slug = 'article';
+
+        $base = $slug;
+        $i = 2;
+
+        while (
+            static::query()
+                ->withTrashed()
+                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+                ->where('slug', $slug)
+                ->exists()
+        ) {
+            $slug = "{$base}-{$i}";
+            $i++;
+        }
+
+        return $slug;
     }
 }
