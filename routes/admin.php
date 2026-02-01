@@ -11,7 +11,6 @@ use App\Http\Controllers\CommentController as PublicCommentController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\OtherController;
 use App\Http\Controllers\Admin\PpdbController;
-use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\CommentAdminController;
 use App\Http\Controllers\Admin\PpdbVerificationController;
 
