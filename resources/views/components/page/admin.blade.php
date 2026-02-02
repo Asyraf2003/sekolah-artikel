@@ -116,8 +116,26 @@
                                 <span>Website</span>
                             </a>
                             <ul class="submenu">
+                                <li class="submenu-item">
+                                    <a href="#" class="submenu-link">Tentang</a>
+                                </li>
                                 <li class="submenu-item {{ Request::routeIs('admin.gallery.index') ? 'active' : '' }}">
                                     <a href="{{ route('admin.gallery.index') }}" class="submenu-link">Gallery</a>
+                                </li>
+                                <li class="submenu-item">
+                                    <a href="#" class="submenu-link">Pengumuman</a>
+                                </li>
+                                <li class="submenu-item">
+                                    <a href="#" class="submenu-link">Informasi</a>
+                                </li>
+                                <li class="submenu-item">
+                                    <a href="#" class="submenu-link">Program Unggulan</a>
+                                </li>
+                                <li class="submenu-item">
+                                    <a href="#" class="submenu-link">Ekstrakurikuler</a>
+                                </li>
+                                <li class="submenu-item">
+                                    <a href="#" class="submenu-link">Agenda</a>
                                 </li>
                                 <li class="submenu-item {{ Request::routeIs('admin.articles.index') ? 'active' : '' }}">
                                     <a href="{{ route('admin.articles.index') }}" class="submenu-link">Artikel</a>

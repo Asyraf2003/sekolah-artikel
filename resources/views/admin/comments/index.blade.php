@@ -226,11 +226,11 @@
                 <div class="card-footer d-flex flex-wrap gap-2 justify-content-between align-items-center">
                     <div class="d-flex flex-wrap align-items-center gap-2">
                         <div class="text-muted small">
-                            Bulk action akan berlaku untuk checkbox yang dipilih.
+                            Action akan berlaku untuk checkbox yang dipilih.
                         </div>
 
                         <select name="action" class="form-select form-select-sm" style="width: 180px" form="bulk-form" required>
-                            <option value="">— Bulk Action —</option>
+                            <option value="">Action</option>
                             <option value="approve">Approve</option>
                             <option value="reject">Reject</option>
                             <option value="spam">Spam</option>
