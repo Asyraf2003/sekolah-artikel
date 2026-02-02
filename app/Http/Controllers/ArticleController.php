@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Article, Category, Tag};
+use App\Models\{Article, HotInfo, Category, Tag};
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
@@ -36,6 +36,10 @@ class ArticleController extends Controller
             $query->orderByDesc('published_at');
         }
 
+        $hotInfos = HotInfo::activeNow()
+            ->limit(6)
+            ->get(['title_id','title_en','title_ar','url']);
+
         $articles = $query->paginate(12)->withQueryString();
 
         $categoriesChip = Category::active()->ordered()
@@ -59,7 +63,7 @@ class ArticleController extends Controller
 
         return view('article.index', compact(
             'articles','categoriesChip','tagsPopular','top','featured',
-            'q','catSlug','tagSlug','sort'
+            'q','catSlug','tagSlug','sort', 'hotInfos'
         ));
     }
 

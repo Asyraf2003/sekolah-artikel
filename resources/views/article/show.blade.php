@@ -1,6 +1,28 @@
-@include('article.partials._helpers')
-
 @php
+  $loc = app()->getLocale();
+  $rtl = ($loc === 'ar');
+
+  $heroUrl = function (?string $p) {
+    if (!$p) return null;
+    if (\Illuminate\Support\Str::startsWith($p, ['http://','https://'])) return $p;
+    if (\Illuminate\Support\Str::startsWith($p, ['storage/','article/','articles/'])) {
+      return \Illuminate\Support\Facades\Storage::url($p);
+    }
+    return asset($p);
+  };
+
+  $titleFor = fn($m) => $m?->{"title_{$loc}"} ?: ($m->title_id ?? '');
+
+  $contentHtmlFor = function ($m) use ($loc) {
+    $html = $m?->{"content_html_{$loc}"} ?? null;
+    if (is_string($html) && trim($html) !== '') return $html;
+
+    $html = $m?->content_html_id ?? null;
+    if (is_string($html) && trim($html) !== '') return $html;
+
+    return '';
+  };
+  
   $aTitle = $titleFor($article);
   $aHero  = $heroUrl($article->hero_image);
   $aDate  = optional($article->published_at)->translatedFormat('d M Y');
@@ -39,6 +61,8 @@
                 <span>{{ $article->reading_time }} {{ __('messages.article_time') ?? 'menit baca' }}</span>
               @endif
             </div>
+
+            @include('article.partials._like_button', ['article' => $article])
 
             @if($aHero)
               <figure class="rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800">

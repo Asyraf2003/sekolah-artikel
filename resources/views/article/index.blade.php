@@ -1,4 +1,18 @@
-@include('article.partials._helpers')
+@php
+  $loc = app()->getLocale();
+
+  $heroUrl = function (?string $p) {
+    if (!$p) return null;
+    if (\Illuminate\Support\Str::startsWith($p, ['http://','https://'])) return $p;
+    if (\Illuminate\Support\Str::startsWith($p, ['storage/','article/','articles/'])) {
+      return \Illuminate\Support\Facades\Storage::url($p);
+    }
+    return asset($p);
+  };
+
+  $titleFor = fn($m) => $m?->{"title_{$loc}"} ?: ($m->title_id ?? '');
+  $excerptFor = fn($m) => $m?->{"excerpt_{$loc}"} ?: ($m->excerpt_id ?? '');
+@endphp
 
 <x-page.index :title="__('messages.article_page_article')">
   <div class="min-h-screen bg-white dark:bg-gray-950">
@@ -15,7 +29,13 @@
           @if($articles->count())
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               @foreach($articles as $a)
-                @include('article.partials._card', ['a'=>$a, 'loc'=>$loc, 'heroUrl'=>$heroUrl])
+                @include('article.partials._card', [
+                  'a' => $a,
+                  'loc' => $loc,
+                  'heroUrl' => $heroUrl,
+                  'titleFor' => $titleFor,
+                  'excerptFor' => $excerptFor,
+                ])
               @endforeach
             </div>
 

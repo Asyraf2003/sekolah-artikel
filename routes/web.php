@@ -30,6 +30,8 @@ Route::get('/articles', [ArticleController::class, 'index'])->name('articles.ind
 Route::get('/articles/{slug}', [ArticleController::class, 'show'])->where('slug', '[A-Za-z0-9\-]+')->name('article');
 Route::post('/articles/{articleId}/like', [LikeController::class, 'toggle'])->whereNumber('articleId')->middleware('throttle:30,1')->name('articles.like');
 Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->middleware('throttle:10,1')->name('comments.store');
+Route::post('/articles/{articleId}/like', [LikeController::class, 'toggle'])
+  ->name('articles.like.toggle');
 
 Route::get('/', function () {
     $gallery = GalleryImage::published()->take(12)->get();
