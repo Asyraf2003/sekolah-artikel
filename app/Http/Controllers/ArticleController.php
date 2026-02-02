@@ -125,11 +125,12 @@ class ArticleController extends Controller
             ->limit(4)->get();
 
         $tagsPopular = Tag::query()
-            ->popular()
+            ->select(['id','slug','name','use_count'])
             ->withCount(['articles as published_articles_count' => fn($q) => $q->published()])
-            ->having('published_articles_count', '>', 0)
+            ->having('published_articles_count', '>', 0) 
+            ->orderByDesc('use_count')
             ->limit(20)
-            ->get(['id','slug','name','use_count']);
+            ->get();
 
         $comments = $article->comments()
             ->approved()
