@@ -169,4 +169,8 @@ return [
     'article_top_article_comment' => 'تعليقات',
     'article_sub_category' => 'فئة فرعية',
     'article_any' => 'مقالات أخرى',
+
+    'article_sort_recent' => 'الأحدث',
+    'article_sort_top' => 'الأكثر شعبية',
+    'article_sort_featured' => 'مميزة',
 ];

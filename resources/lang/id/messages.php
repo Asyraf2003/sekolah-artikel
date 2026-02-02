@@ -169,4 +169,8 @@ return [
     'article_top_article_comment' => 'komentar',
     'article_sub_category' => 'Sub Kategori',
     'article_any' => 'Artikel Lainnya',
+    
+    'article_sort_recent' => 'Terbaru',
+    'article_sort_top' => 'Terpopuler',
+    'article_sort_featured' => 'Unggulan',
 ];

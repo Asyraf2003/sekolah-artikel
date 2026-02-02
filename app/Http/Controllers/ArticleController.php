@@ -12,9 +12,17 @@ class ArticleController extends Controller
         $q       = trim((string)$request->get('q', ''));
         $catSlug = $request->get('category');
         $tagSlug = $request->get('tag');
-        $sort    = (string)$request->get('sort', 'recent'); // recent|top|featured
+        $sort    = (string)$request->get('sort', 'recent'); 
+        $sort    = in_array($sort, ['recent','top','featured'], true) ? $sort : 'recent';
 
-        $query = Article::with(['author','categories','tags'])
+        $query = Article::query()
+            ->select([
+                'id','author_id','slug','hero_image',
+                'title_id','title_en','title_ar',
+                'excerpt_id','excerpt_en','excerpt_ar',
+                'published_at','view_count','comment_count','reading_time',
+            ])
+            ->with(['author:id,name', 'categories:id,slug,name_id,name_en,name_ar', 'tags:id,slug,name'])
             ->when($q !== '', fn($qq) => $qq->searchTitle($q))
             ->when($catSlug, fn($qq) => $qq->whereHas('categories', fn($c) => $c->where('slug', $catSlug)))
             ->when($tagSlug, fn($qq) => $qq->whereHas('tags', fn($t) => $t->where('slug', $tagSlug)))
@@ -29,27 +37,53 @@ class ArticleController extends Controller
         }
 
         $articles = $query->paginate(12)->withQueryString();
-        $categories = Category::active()->ordered()->get();
-        $tags = Tag::popular()->limit(20)->get();
 
-        return view('article', compact('articles','categories','tags','q','catSlug','tagSlug','sort'));
+        $categoriesChip = Category::active()->ordered()
+            ->limit(12)
+            ->get(['id','slug','name_id','name_en','name_ar']);
+
+        $tagsPopular = Tag::query()
+            ->popular()
+            ->withCount(['articles as published_articles_count' => fn($q) => $q->published()])
+            ->having('published_articles_count', '>', 0)
+            ->limit(20)
+            ->get(['id','slug','name','use_count']);
+
+        $top = Article::top()
+            ->select(['id','slug','hero_image','title_id','title_en','title_ar','view_count','comment_count','published_at'])
+            ->limit(5)->get();
+
+        $featured = Article::featured()
+            ->select(['id','slug','hero_image','title_id','title_en','title_ar','published_at'])
+            ->limit(4)->get();
+
+        return view('article.index', compact(
+            'articles','categoriesChip','tagsPopular','top','featured',
+            'q','catSlug','tagSlug','sort'
+        ));
     }
 
     public function show(string $slug, Request $request)
     {
-        $article = Article::with(['author','categories','tags'])
+        $article = Article::query()
+            ->select([
+                'id','author_id','slug','hero_image',
+                'title_id','title_en','title_ar',
+                'excerpt_id','excerpt_en','excerpt_ar',
+                'content_html_id','content_html_en','content_html_ar',
+                'published_at','view_count','comment_count','reading_time',
+            ])
+            ->with(['author:id,name', 'categories:id,slug,name_id,name_en,name_ar', 'tags:id,slug,name'])
             ->published()
             ->where('slug', $slug)
             ->firstOrFail();
 
-        // view counter tetap (session-based)
         $key = 'viewed_article_'.$article->id;
         if (!$request->session()->has($key)) {
             $article->increment('view_count');
             $request->session()->put($key, true);
         }
 
-        // reply_to tetap (biar komentar UI kamu ga rusak)
         $replyTo = null;
         if ($rid = $request->integer('reply_to')) {
             $replyTo = $article->comments()
@@ -59,7 +93,16 @@ class ArticleController extends Controller
                 ->first();
         }
 
+        // comments tree (approved)
+        $allComments = $article->comments()
+            ->approved()
+            ->with('user:id,name,email')
+            ->oldest()
+            ->get();
+
         $related = Article::published()
+            ->select(['id','slug','hero_image','title_id','title_en','title_ar','published_at','author_id'])
+            ->with(['author:id,name', 'categories:id,slug,name_id,name_en,name_ar'])
             ->whereKeyNot($article->id)
             ->when($article->categories->isNotEmpty(), function($qq) use ($article){
                 $catIds = $article->categories->pluck('id');
@@ -69,11 +112,33 @@ class ArticleController extends Controller
             ->limit(8)
             ->get();
 
-        $top      = Article::top()->limit(5)->get();
-        $featured = Article::featured()->limit(4)->get();
+        $top = Article::top()
+            ->select(['id','slug','hero_image','title_id','title_en','title_ar','view_count','comment_count','published_at'])
+            ->limit(5)->get();
 
-        // view lama kamu pakai view('article') untuk list+detail,
-        // jadi tetap sama biar kamu nggak nangis di blade.
-        return view('article', compact('article','related','top','featured','replyTo'));
+        $featured = Article::featured()
+            ->select(['id','slug','hero_image','title_id','title_en','title_ar','published_at'])
+            ->limit(4)->get();
+
+        $tagsPopular = Tag::query()
+            ->popular()
+            ->withCount(['articles as published_articles_count' => fn($q) => $q->published()])
+            ->having('published_articles_count', '>', 0)
+            ->limit(20)
+            ->get(['id','slug','name','use_count']);
+
+        $comments = $article->comments()
+            ->approved()
+            ->with('user:id,name,email')
+            ->oldest()
+            ->get();
+
+        $groupedComments = $comments->groupBy('parent_id');
+        $topLevelComments = $groupedComments[null] ?? collect();
+
+        return view('article.show', compact(
+            'article','related','top','featured','tagsPopular',
+            'replyTo','groupedComments','topLevelComments', 'comments', 
+        ));
     }
 }

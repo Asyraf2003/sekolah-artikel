@@ -143,16 +143,19 @@ class ArticleController extends Controller
 
     public function update(Request $request, Article $article)
     {
-        $data = $request->all();
         $validated = $request->validate($this->articleRules());
 
         [$normalizedStatus, $normalizedPublishedAt] = $this->normalizeStatus(
-            (string)($data['status'] ?? $article->status),
-            $data['published_at'] ?? $article->published_at
+            (string)($validated['status'] ?? $article->status),
+            $validated['published_at'] ?? $article->published_at
         );
 
         DB::beginTransaction();
         try {
+            $deltaId = $this->decodeDelta($validated['content_delta_id'] ?? null);
+            $deltaEn = $this->decodeDelta($validated['content_delta_en'] ?? null);
+            $deltaAr = $this->decodeDelta($validated['content_delta_ar'] ?? null);
+
             $payload = [
                 'title_id'   => trim((string)$validated['title_id']),
                 'title_en'   => $validated['title_en'] ?? null,
@@ -166,9 +169,9 @@ class ArticleController extends Controller
                 'content_delta_en' => $deltaEn,
                 'content_delta_ar' => $deltaAr,
 
-                'content_html_id' => $validated['content_html_id'],
-                'content_html_en' => $validated['content_html_en'] ?? null,
-                'content_html_ar' => $validated['content_html_ar'] ?? null,
+                'content_html_id'  => $validated['content_html_id'],
+                'content_html_en'  => $validated['content_html_en'] ?? null,
+                'content_html_ar'  => $validated['content_html_ar'] ?? null,
 
                 'status'       => $normalizedStatus,
                 'published_at' => $normalizedPublishedAt,
@@ -187,10 +190,13 @@ class ArticleController extends Controller
                 $article->save();
             }
 
-            $this->syncCategories($article, $data['category_ids'] ?? []);
-            $this->syncTags($article, $data['tag_slugs'] ?? [], $data['tag_ids'] ?? []);
+            $this->syncCategories($article, $validated['category_ids'] ?? []);
+            $this->syncTags($article, $validated['tag_slugs'] ?? [], $validated['tag_ids'] ?? []);
 
-            $article->reading_time = $this->computeReadingMinutes($article->content_delta_id, $article->content_html_id);
+            $article->reading_time = $this->computeReadingMinutes(
+                $article->content_delta_id,
+                $article->content_html_id
+            );
 
             $article->save();
 
@@ -227,11 +233,18 @@ class ArticleController extends Controller
 
     private function decodeDelta($value): ?array
     {
-        if (is_array($value)) return $value;
+        if (is_array($value)) {
+            return isset($value['ops']) && is_array($value['ops']) ? $value : null;
+        }
+
         if (!is_string($value) || trim($value) === '') return null;
 
         $decoded = json_decode($value, true);
-        return json_last_error() === JSON_ERROR_NONE ? $decoded : null;
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) return null;
+
+        if (!isset($decoded['ops']) || !is_array($decoded['ops'])) return null;
+
+        return $decoded;
     }
 
     private function syncCategories(Article $article, array $categoryIds): void

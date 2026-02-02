@@ -24,6 +24,8 @@ return new class extends Migration
             $table->foreignId('article_id')->constrained()->cascadeOnDelete();
             $table->foreignId('tag_id')->constrained()->cascadeOnDelete();
             $table->unique(['article_id','tag_id']);
+            $table->index('tag_id');
+            $table->index('article_id');
         });
     }
 

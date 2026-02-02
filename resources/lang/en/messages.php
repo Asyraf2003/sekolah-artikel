@@ -169,4 +169,8 @@ return [
     'article_top_article_comment' => 'comments',
     'article_sub_category' => 'Sub Category',
     'article_any' => 'Other Articles',
+
+    'article_sort_recent' => 'Latest',
+    'article_sort_top' => 'Most Popular',
+    'article_sort_featured' => 'Featured',
 ];
