@@ -254,9 +254,9 @@
                   hover:bg-white/40 dark:hover:bg-gray-700/50 
                   transition-all duration-300 ease-in-out 
                   hover:scale-110">
-            ⬅️
+            ⏪
           </button>
-          <button @click.stop="prev()"
+          <button @click.stop="next()"
             class="absolute right-2 top-1/2 -translate-y-1/2 
                   h-12 w-12 rounded-full 
                   bg-white/20 backdrop-blur-sm 
@@ -265,7 +265,7 @@
                   hover:bg-white/40 dark:hover:bg-gray-700/50 
                   transition-all duration-300 ease-in-out 
                   hover:scale-110">
-            ➡️
+            ⏩
           </button>
         </div>
       </div>
@@ -496,7 +496,7 @@
               <div class="flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                 @if($date)
                   <time datetime="{{ $a->published_at->toDateString() }}">{{ $date }}</time>
-                @endif>
+                @endif
 
                 @foreach($cats as $c)
                   <span class="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
