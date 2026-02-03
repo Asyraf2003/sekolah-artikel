@@ -11,6 +11,7 @@ use App\Models\Extracurricular;
 use App\Models\AboutSection;
 use App\Models\GalleryImage;
 use App\Models\Announcement;
+use App\Models\SiteStat;
 use App\Models\Program;
 use App\Models\Event;
 
@@ -40,8 +41,10 @@ Route::get('/', function () {
 
     $about = AboutSection::singleton();
 
+    $stats = SiteStat::active()->ordered()->get(); // <= ini
+
     return view('welcome', compact(
-        'gallery', 'announcements', 'programs', 'ekstra', 'events', 'about'
+        'gallery', 'announcements', 'programs', 'ekstra', 'events', 'about', 'stats'
     ));
 })->name('home');
 

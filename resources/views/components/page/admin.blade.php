@@ -110,26 +110,39 @@
                         </li>
 
                         {{-- ====== WEBSITE ====== --}}
-                        <li class="sidebar-item has-sub {{ Request::routeIs('admin.gallery.*') || Request::routeIs('admin.articles.*') || Request::routeIs('admin.about.*') || Request::routeIs('admin.announcements.*') || Request::routeIs('admin.comments.*') ? 'active' : '' }}">
+                        <li class="sidebar-item has-sub {{
+                                Request::routeIs('admin.gallery.*')
+                                || Request::routeIs('admin.articles.*')
+                                || Request::routeIs('admin.about.*')
+                                || Request::routeIs('admin.announcements.*')
+                                || Request::routeIs('admin.site-stats.*')
+                                || Request::routeIs('admin.programs.*')
+                                || Request::routeIs('admin.comments.*')
+                                    ? 'active' : ''
+                            }}">
                             <a href="#" class="sidebar-link">
                                 <i class="bi bi-people-fill"></i>
                                 <span>Website</span>
                             </a>
+
                             <ul class="submenu">
                                 <li class="submenu-item {{ Request::routeIs('admin.about.edit') ? 'active' : '' }}">
                                     <a href="{{ route('admin.about.edit') }}" class="submenu-link">Tentang</a>
                                 </li>
+
                                 <li class="submenu-item {{ Request::routeIs('admin.gallery.index') ? 'active' : '' }}">
                                     <a href="{{ route('admin.gallery.index') }}" class="submenu-link">Gallery</a>
                                 </li>
-                                <li class="submenu-item {{ Request::routeIs('admin.announcements.index') ? 'active' : '' }}">
+
+                                <li class="submenu-item {{ Request::routeIs('admin.announcements.*') ? 'active' : '' }}">
                                     <a href="{{ route('admin.announcements.index') }}" class="submenu-link">Pengumuman</a>
                                 </li>
-                                <li class="submenu-item">
-                                    <a href="#" class="submenu-link">Informasi</a>
+
+                                <li class="submenu-item {{ Request::routeIs('admin.site-stats.*') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.site-stats.index') }}" class="submenu-link">Statistik</a>
                                 </li>
-                                <li class="submenu-item">
-                                    <a href="#" class="submenu-link">Program Unggulan</a>
+                                <li class="submenu-item {{ Request::routeIs('admin.programs.*') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.programs.index') }}" class="submenu-link">Program Unggulan</a>
                                 </li>
                                 <li class="submenu-item">
                                     <a href="#" class="submenu-link">Ekstrakurikuler</a>

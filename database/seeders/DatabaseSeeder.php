@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
 
             HotInfoSeeder::class,
             AnnouncementSeeder::class,
+            SiteStatSeeder::class,
             ProgramSeeder::class,
             ExtracurricularSeeder::class,
             EventSeeder::class,

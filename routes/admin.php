@@ -16,6 +16,8 @@ use App\Http\Controllers\Admin\PpdbVerificationController;
 use App\Http\Controllers\Admin\QuillImageController;
 use App\Http\Controllers\Admin\AboutSectionController;
 use App\Http\Controllers\Admin\AnnouncementController;
+use App\Http\Controllers\Admin\SiteStatController;
+use App\Http\Controllers\Admin\ProgramController;
 
 Route::middleware(['auth', 'role:admin', 'verified'])
     ->group(function () {
@@ -83,4 +85,12 @@ Route::middleware(['auth', 'role:admin', 'verified'])
             ->name('announcements.restore');
         Route::delete('announcements/{announcement}/force', [AnnouncementController::class, 'forceDestroy'])
             ->name('announcements.forceDestroy');
+
+        Route::resource('site-stats', SiteStatController::class)->only(['index','edit','update']);
+
+        Route::resource('programs', ProgramController::class)->except(['show']);
+        Route::patch('programs/{program}/restore', [ProgramController::class, 'restore'])
+            ->name('programs.restore');
+        Route::delete('programs/{program}/force', [ProgramController::class, 'forceDestroy'])
+            ->name('programs.forceDestroy');
     });

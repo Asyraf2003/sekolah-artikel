@@ -45,10 +45,13 @@ class ProgramSeeder extends Seeder
         ];
 
         foreach ($rows as $i => $r) {
-            Program::create(array_merge($r, [
-                'sort_order' => $i,
-                'is_published' => true,
-            ]));
+            Program::updateOrCreate(
+                ['title_id' => $r['title_id']],
+                array_merge($r, [
+                    'sort_order'   => $i,
+                    'is_published' => true,
+                ])
+            );
         }
     }
 }

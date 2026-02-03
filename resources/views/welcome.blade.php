@@ -320,35 +320,21 @@
             <div class="mt-12 grid gap-12 lg:grid-cols-2 items-center">
                 {{-- Kolom Kiri: Informasi dan Statistik --}}
                 <div>
-                    <h3 class="text-2xl font-semibold text-indigo-600 dark:text-indigo-400">
-                        {{ __('messages.stats_heading') }}
-                    </h3>
-                    <p class="mt-4 text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-                        {{ __('messages.stats_heading_description') }}
-                    </p>
+                  <h3 class="text-2xl font-semibold text-indigo-600 dark:text-indigo-400">
+                      {{ __('messages.stats_heading') }}
+                  </h3>
+                  <p class="mt-4 text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+                      {{ __('messages.stats_heading_description') }}
+                  </p>
 
-                    <div class="mt-8 grid grid-cols-2 gap-6 md:grid-cols-2">
-                        {{-- Statistik Item 1 --}}
+                  <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    @foreach($stats as $s)
                         <div class="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
-                            <p class="text-4xl font-bold text-indigo-600 dark:text-indigo-400">41</p>
-                            <p class="mt-1 text-gray-700 dark:text-gray-300">{{ __('messages.stats_students_description') }}</p>
+                            <p class="text-4xl font-bold text-indigo-600 dark:text-indigo-400">{{ $s->valueFor() }}</p>
+                            <p class="mt-1 text-gray-700 dark:text-gray-300">{{ $s->descFor() }}</p>
                         </div>
-                        {{-- Statistik Item 2 --}}
-                        <div class="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
-                            <p class="text-4xl font-bold text-indigo-600 dark:text-indigo-400">12</p>
-                            <p class="mt-1 text-gray-700 dark:text-gray-300">{{ __('messages.stats_awards_description') }}</p>
-                        </div>
-                        {{-- Statistik Item 3 --}}
-                        <div class="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
-                            <p class="text-4xl font-bold text-indigo-600 dark:text-indigo-400">11</p>
-                            <p class="mt-1 text-gray-700 dark:text-gray-300">{{ __('messages.stats_classes_description') }}</p>
-                        </div>
-                        {{-- Statistik Item 4 --}}
-                        <div class="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
-                            <p class="text-4xl font-bold text-indigo-600 dark:text-indigo-400">7</p>
-                            <p class="mt-1 text-gray-700 dark:text-gray-300">{{ __('messages.stats_curricular_description') }}</p>
-                        </div>
-                    </div>
+                    @endforeach
+                  </div>
                 </div>
 
                 {{-- Kolom Kanan: Foto Sekolah dengan Efek --}}
@@ -378,9 +364,10 @@
       <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         @forelse ($programs as $p)
           <div class="rounded-lg border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-            <h3 class="font-medium">{{ $p->titleFor(app()->getLocale()) }}</h3>
+            @php($loc = strtolower(substr(app()->getLocale(), 0, 2)))
+            <h3 class="font-medium">{{ $p->titleFor($loc) }}</h3>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              {{ $p->descFor(app()->getLocale()) }}
+              {{ $p->descFor($loc) }}
             </p>
           </div>
         @empty
