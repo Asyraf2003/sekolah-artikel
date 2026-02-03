@@ -23,13 +23,15 @@ class ExtracurricularSeeder extends Seeder
         ];
 
         foreach ($rows as $i => $r) {
-            Extracurricular::create([
-                'name_id' => $r['id'],
-                'name_en' => $r['en'],
-                'name_ar' => $r['ar'],
-                'is_published' => true,
-                'sort_order' => $i,
-            ]);
+            Extracurricular::updateOrCreate(
+                ['name_id' => $r['id']],
+                [
+                    'name_en' => $r['en'],
+                    'name_ar' => $r['ar'],
+                    'is_published' => true,
+                    'sort_order' => $i,
+                ]
+            );
         }
     }
 }

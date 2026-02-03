@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\AboutSectionController;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\SiteStatController;
 use App\Http\Controllers\Admin\ProgramController;
+use App\Http\Controllers\Admin\ExtracurricularController;
 
 Route::middleware(['auth', 'role:admin', 'verified'])
     ->group(function () {
@@ -55,22 +56,18 @@ Route::middleware(['auth', 'role:admin', 'verified'])
             ->whereNumber('comment')
             ->name('comments.destroy');
 
-        // Kategori (full CRUD)
         Route::resource('categories', CategoryController::class);
 
-        // Tag (ringkas: index + create/update/delete inline)
         Route::get('tags', [TagController::class, 'index'])->name('tags.index');
         Route::post('tags', [TagController::class, 'store'])->name('tags.store');
         Route::patch('tags/{tag}', [TagController::class, 'update'])->name('tags.update');
         Route::delete('tags/{tag}', [TagController::class, 'destroy'])->name('tags.destroy');
 
-        // Hot Info / Ticker (index + store + update + destroy)
         Route::get('hot-infos', [HotInfoController::class, 'index'])->name('hot_infos.index');
         Route::post('hot-infos', [HotInfoController::class, 'store'])->name('hot_infos.store');
         Route::patch('hot-infos/{hotInfo}', [HotInfoController::class, 'update'])->name('hot_infos.update');
         Route::delete('hot-infos/{hotInfo}', [HotInfoController::class, 'destroy'])->name('hot_infos.destroy');
 
-        // Moderasi komentar (admin)
         Route::patch('comments/{comment}/moderate', [PublicCommentController::class, 'moderate'])
             ->name('comments.moderate');
         
@@ -93,4 +90,10 @@ Route::middleware(['auth', 'role:admin', 'verified'])
             ->name('programs.restore');
         Route::delete('programs/{program}/force', [ProgramController::class, 'forceDestroy'])
             ->name('programs.forceDestroy');
+
+        Route::resource('extracurriculars', ExtracurricularController::class)->except(['show']);
+        Route::patch('extracurriculars/{extracurricular}/restore', [ExtracurricularController::class, 'restore'])
+            ->name('extracurriculars.restore');
+        Route::delete('extracurriculars/{extracurricular}/force', [ExtracurricularController::class, 'forceDestroy'])
+            ->name('extracurriculars.forceDestroy');
     });

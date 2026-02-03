@@ -18,6 +18,8 @@ return new class extends Migration {
 
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index(['is_published', 'sort_order']);
         });
     }
 

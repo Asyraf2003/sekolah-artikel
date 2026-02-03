@@ -38,20 +38,15 @@ Route::get('/', function () {
     $programs = Program::published()->ordered()->take(8)->get();
     $ekstra = Extracurricular::published()->ordered()->get();
     $events = Event::published()->ordered()->take(6)->get();
-
     $about = AboutSection::singleton();
-
-    $stats = SiteStat::active()->ordered()->get(); // <= ini
-
+    $stats = SiteStat::active()->ordered()->get(); 
     return view('welcome', compact(
         'gallery', 'announcements', 'programs', 'ekstra', 'events', 'about', 'stats'
     ));
 })->name('home');
 
 Route::get('/ppdb', [PpdbPublicController::class, 'create'])->name('ppdb.create');
-Route::post('/ppdb', [PpdbPublicController::class, 'store'])
-    ->middleware('throttle:5,10') // 5 request per 10 menit per IP
-    ->name('ppdb.store');
+Route::post('/ppdb', [PpdbPublicController::class, 'store'])->middleware('throttle:5,10')->name('ppdb.store');
 Route::get('/ppdb/receipt/{code}', [PpdbPublicController::class, 'receipt'])->name('ppdb.receipt');
 Route::get('/ppdb/activate/{token}', [PpdbPublicController::class, 'showActivate'])->name('ppdb.activate.show');
 Route::post('/ppdb/activate/{token}', [PpdbPublicController::class, 'activate'])->name('ppdb.activate');

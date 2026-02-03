@@ -117,6 +117,7 @@
                                 || Request::routeIs('admin.announcements.*')
                                 || Request::routeIs('admin.site-stats.*')
                                 || Request::routeIs('admin.programs.*')
+                                || Request::routeIs('admin.extracurriculars.*')
                                 || Request::routeIs('admin.comments.*')
                                     ? 'active' : ''
                             }}">
@@ -144,8 +145,8 @@
                                 <li class="submenu-item {{ Request::routeIs('admin.programs.*') ? 'active' : '' }}">
                                     <a href="{{ route('admin.programs.index') }}" class="submenu-link">Program Unggulan</a>
                                 </li>
-                                <li class="submenu-item">
-                                    <a href="#" class="submenu-link">Ekstrakurikuler</a>
+                                <li class="submenu-item {{ Request::routeIs('admin.extracurriculars.*') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.extracurriculars.index') }}" class="submenu-link">Ekstrakurikuler</a>
                                 </li>
                                 <li class="submenu-item">
                                     <a href="#" class="submenu-link">Agenda</a>
