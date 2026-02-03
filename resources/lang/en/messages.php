@@ -173,4 +173,6 @@ return [
     'article_sort_recent' => 'Latest',
     'article_sort_top' => 'Most Popular',
     'article_sort_featured' => 'Featured',
+
+    'agenda_link' => 'Agenda details',
 ];

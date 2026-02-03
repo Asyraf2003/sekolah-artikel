@@ -173,4 +173,6 @@ return [
     'article_sort_recent' => 'Terbaru',
     'article_sort_top' => 'Terpopuler',
     'article_sort_featured' => 'Unggulan',
+
+    'agenda_link' => 'Detail agenda',
 ];

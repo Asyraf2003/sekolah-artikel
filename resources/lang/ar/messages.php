@@ -173,4 +173,6 @@ return [
     'article_sort_recent' => 'الأحدث',
     'article_sort_top' => 'الأكثر شعبية',
     'article_sort_featured' => 'مميزة',
+
+    'agenda_link' => 'تفاصيل الأجندة',
 ];

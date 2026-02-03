@@ -364,7 +364,10 @@
       <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         @forelse ($programs as $p)
           <div class="rounded-lg border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-            @php($loc = strtolower(substr(app()->getLocale(), 0, 2)))
+            @php
+              $loc = strtolower(substr(app()->getLocale(), 0, 2));
+            @endphp
+
             <h3 class="font-medium">{{ $p->titleFor($loc) }}</h3>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
               {{ $p->descFor($loc) }}
@@ -415,7 +418,7 @@
             @if($ev->link_url)
               <div class="mt-3">
                 <a href="{{ $ev->link_url }}" class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline">
-                  {{ __('Detail agenda') }} →
+                  {{ __('messages.agenda_link') }} →
                 </a>
               </div>
             @endif
