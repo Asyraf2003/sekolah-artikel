@@ -42,10 +42,13 @@ class EventSeeder extends Seeder
         ];
 
         foreach ($rows as $i => $r) {
-            Event::create(array_merge($r, [
-                'is_published' => true,
-                'sort_order' => $i,
-            ]));
+            Event::updateOrCreate(
+                ['title_id' => $r['title_id'], 'event_date' => $r['event_date']],
+                array_merge($r, [
+                    'is_published' => true,
+                    'sort_order' => $i,
+                ])
+            );
         }
     }
 }

@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\SiteStatController;
 use App\Http\Controllers\Admin\ProgramController;
 use App\Http\Controllers\Admin\ExtracurricularController;
+use App\Http\Controllers\Admin\EventController;
 
 Route::middleware(['auth', 'role:admin', 'verified'])
     ->group(function () {
@@ -96,4 +97,10 @@ Route::middleware(['auth', 'role:admin', 'verified'])
             ->name('extracurriculars.restore');
         Route::delete('extracurriculars/{extracurricular}/force', [ExtracurricularController::class, 'forceDestroy'])
             ->name('extracurriculars.forceDestroy');
+
+        Route::resource('events', EventController::class)->except(['show']);
+        Route::patch('events/{event}/restore', [EventController::class, 'restore'])
+            ->name('events.restore');
+        Route::delete('events/{event}/force', [EventController::class, 'forceDestroy'])
+            ->name('events.forceDestroy');
     });

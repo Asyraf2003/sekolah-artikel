@@ -29,6 +29,8 @@ return new class extends Migration {
             $table->boolean('is_published')->default(true)->index();
             $table->unsignedInteger('sort_order')->default(0)->index();
 
+            $table->index(['is_published', 'event_date', 'sort_order']);
+
             $table->timestamps();
             $table->softDeletes();
         });
