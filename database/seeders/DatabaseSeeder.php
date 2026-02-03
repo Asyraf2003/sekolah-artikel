@@ -10,13 +10,13 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
+            AboutSectionSeeder::class,
             GalleryImageSeeder::class,
 
             ArticleSeeder::class,
             TagSeeder::class,
             CategorySeeder::class,
             CommentSeeder::class,
-            ArticleLikeSeeder::class,
 
             HotInfoSeeder::class,
             AnnouncementSeeder::class,

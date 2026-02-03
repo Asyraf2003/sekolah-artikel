@@ -54,11 +54,6 @@ class Article extends Model
         return $this->hasMany(Comment::class);
     }
 
-    public function likes()
-    {
-        return $this->hasMany(ArticleLike::class);
-    }
-
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'article_category', 'article_id', 'category_id');

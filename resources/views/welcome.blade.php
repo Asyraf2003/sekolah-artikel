@@ -46,18 +46,23 @@
         {{ __('messages.about_paragraph1') }}
       </p>
 
+      @php
+        $loc = app()->getLocale();
+        $rtl = ($loc === 'ar');
+      @endphp
+
       <div class="mt-12 grid md:grid-cols-2 gap-8 items-start">
         {{-- Visi --}}
         <div class="relative w-full h-auto group">
             <div class="absolute inset-0 rounded-2xl bg-gray-200 dark:bg-gray-800 transition-all duration-300 ease-in-out transform translate-x-3 translate-y-3 group-hover:translate-x-6 group-hover:translate-y-6"></div>
 
             <div class="relative rounded-2xl bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 shadow-md transition-all duration-300 ease-in-out transform group-hover:-translate-x-1 group-hover:-translate-y-1 hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-600">
-                <h3 class="text-xl font-semibold text-indigo-600 dark:text-indigo-400">
-                    {{ __('messages.about_vision_title') }}
-                </h3>
-                <p class="mt-3 text-gray-700 dark:text-gray-300 leading-relaxed">
-                    {!! __('messages.about_vision_content') !!}
-                </p>
+                <div class="mt-3">
+                    <div class="prose prose-indigo dark:prose-invert max-w-none {{ $rtl ? 'text-right' : '' }}"
+                        dir="{{ $rtl ? 'rtl' : 'ltr' }}">
+                        {!! $about->visionHtml() !!}
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -66,23 +71,12 @@
             <div class="absolute inset-0 rounded-2xl bg-gray-200 dark:bg-gray-800 transition-all duration-300 ease-in-out transform translate-x-3 translate-y-3 group-hover:translate-x-6 group-hover:translate-y-6"></div>
 
             <div class="relative rounded-2xl bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 shadow-md transition-all duration-300 ease-in-out transform group-hover:-translate-x-1 group-hover:-translate-y-1 hover:shadow-2xl hover:border-indigo-300 dark:hover:border-indigo-600">
-                <h3 class="text-xl font-semibold text-indigo-600 dark:text-indigo-400">
-                    {{ __('messages.about_mission_title') }}
-                </h3>
-                <ul class="mt-3 list-none space-y-3 text-gray-700 dark:text-gray-300 text-left">
-                    <li class="flex items-start gap-2">
-                        <span>{{ __('messages.about_mission_item1') }}</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span>{{ __('messages.about_mission_item2') }}</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span>{{ __('messages.about_mission_item3') }}</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span>{{ __('messages.about_mission_item4') }}</span>
-                    </li>
-                </ul>
+                <div class="mt-3">
+                    <div class="prose prose-indigo dark:prose-invert max-w-none {{ $rtl ? 'text-right' : '' }}"
+                        dir="{{ $rtl ? 'rtl' : 'ltr' }}">
+                        {!! $about->missionHtml() !!}
+                    </div>
+                </div>
             </div>
         </div>
       </div>

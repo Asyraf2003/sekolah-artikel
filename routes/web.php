@@ -1,18 +1,18 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PpdbController;
-use App\Models\GalleryImage;
+use App\Http\Controllers\PpdbPublicController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
-use App\Http\Controllers\LikeController;
+use App\Http\Controllers\PpdbController;
+use App\Models\Extracurricular;
+use App\Models\AboutSection;
+use App\Models\GalleryImage;
 use App\Models\Announcement;
 use App\Models\Program;
-use App\Models\Extracurricular;
 use App\Models\Event;
-use App\Http\Controllers\PpdbPublicController;
 
 Route::get('/lang/{locale}', function ($locale) {
     if (! in_array($locale, ['en', 'id', 'ar'])) {
@@ -28,10 +28,8 @@ Route::get('/sitemap.xml', fn() =>
 
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/articles/{slug}', [ArticleController::class, 'show'])->where('slug', '[A-Za-z0-9\-]+')->name('article');
-Route::post('/articles/{articleId}/like', [LikeController::class, 'toggle'])->whereNumber('articleId')->middleware('throttle:30,1')->name('articles.like');
 Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->middleware('throttle:10,1')->name('comments.store');
-Route::post('/articles/{articleId}/like', [LikeController::class, 'toggle'])
-  ->name('articles.like.toggle');
+
 
 Route::get('/', function () {
     $gallery = GalleryImage::published()->take(12)->get();
@@ -39,7 +37,12 @@ Route::get('/', function () {
     $programs = Program::published()->ordered()->take(8)->get();
     $ekstra = Extracurricular::published()->ordered()->get();
     $events = Event::published()->ordered()->take(6)->get();
-    return view('welcome', compact('gallery', 'announcements', 'programs', 'ekstra', 'events'));
+
+    $about = AboutSection::singleton();
+
+    return view('welcome', compact(
+        'gallery', 'announcements', 'programs', 'ekstra', 'events', 'about'
+    ));
 })->name('home');
 
 Route::get('/ppdb', [PpdbPublicController::class, 'create'])->name('ppdb.create');

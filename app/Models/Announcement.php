@@ -18,49 +18,63 @@ class Announcement extends Model
     ];
 
     protected $casts = [
-        'event_date'   => 'date',
-        'published_at' => 'datetime',
-        'is_published' => 'boolean',
+        'event_date'    => 'date',
+        'published_at'  => 'datetime',
+        'is_published'  => 'boolean',
+        'sort_order'    => 'integer',
     ];
 
-    // Ambil judul sesuai locale (fallback ke ID → EN → AR → string kosong)
-    public function titleFor(?string $loc = null): string
+    private function normalizeLocale(?string $loc): string
     {
         $loc = $loc ?: app()->getLocale();
+        $loc = strtolower($loc);
+        // aman kalau dapat "id_ID", "en_US", dll
+        return substr($loc, 0, 2);
+    }
+
+    // Ambil judul sesuai locale (fallback ID → EN → AR → '')
+    public function titleFor(?string $loc = null): string
+    {
+        $loc = $this->normalizeLocale($loc);
+
         $map = ['id' => 'title_id', 'en' => 'title_en', 'ar' => 'title_ar'];
         $k = $map[$loc] ?? 'title_id';
-        return $this->$k
-            ?? $this->title_id
-            ?? $this->title_en
-            ?? $this->title_ar
-            ?? '';
+
+        return $this->{$k}
+            ?: $this->title_id
+            ?: $this->title_en
+            ?: $this->title_ar
+            ?: '';
     }
 
     public function descFor(?string $loc = null): ?string
     {
-        $loc = $loc ?: app()->getLocale();
+        $loc = $this->normalizeLocale($loc);
+
         $map = ['id' => 'desc_id', 'en' => 'desc_en', 'ar' => 'desc_ar'];
         $k = $map[$loc] ?? 'desc_id';
-        return $this->$k
-            ?? $this->desc_id
-            ?? $this->desc_en
-            ?? $this->desc_ar
-            ?? null;
+
+        return $this->{$k}
+            ?: $this->desc_id
+            ?: $this->desc_en
+            ?: $this->desc_ar
+            ?: null;
     }
 
-    /** Scope hanya yang sudah terbit dan tanggal sekarang/ke depan (opsional) */
+    /** Scope: hanya yang sudah terbit */
     public function scopePublished(Builder $q): Builder
     {
         return $q->where('is_published', true)
-                 ->where(function($qq){
-                    $qq->whereNull('published_at')
-                       ->orWhere('published_at', '<=', now());
-                 });
+            ->where(function (Builder $qq) {
+                $qq->whereNull('published_at')
+                   ->orWhere('published_at', '<=', now());
+            });
     }
 
-    /** Scope urutan default */
+    /** Scope: urutan default */
     public function scopeOrdered(Builder $q): Builder
     {
-        return $q->orderBy('sort_order')->orderByDesc('event_date');
+        return $q->orderBy('sort_order')
+                 ->orderByDesc('event_date');
     }
 }

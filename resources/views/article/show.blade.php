@@ -73,8 +73,6 @@
               @endif
             </div>
 
-            @include('article.partials._like_button', ['article' => $article])
-
             @if($aHero)
               <figure class="rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800">
                 <img src="{{ $aHero }}" alt="{{ $aTitle }}" class="w-full">

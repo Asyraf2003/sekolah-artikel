@@ -5,7 +5,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void {
+    public function up(): void
+    {
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
 
@@ -19,26 +20,30 @@ return new class extends Migration {
             $table->text('desc_en')->nullable();
             $table->text('desc_ar')->nullable();
 
-            // Tanggal pengumuman (mis. hari H acara / tanggal efektif)
-            $table->date('event_date')->index();
+            // Tanggal pengumuman
+            $table->date('event_date');
 
-            // Link tujuan (opsional)
-            $table->string('link_url')->nullable();
+            // Link tujuan (opsional) - URL bisa panjang
+            $table->string('link_url', 2048)->nullable();
 
             // Status publikasi
-            $table->boolean('is_published')->default(true)->index();
-            $table->timestamp('published_at')->nullable()->index();
+            $table->boolean('is_published')->default(true);
+            $table->timestamp('published_at')->nullable();
 
-            $table->unsignedInteger('sort_order')->default(0)->index();
+            $table->unsignedInteger('sort_order')->default(0);
 
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['is_published','event_date','sort_order']);
+            // Index yang lebih “niat” (nggak dobel-dobel)
+            $table->index(['event_date']);
+            $table->index(['is_published', 'published_at']);
+            $table->index(['is_published', 'sort_order', 'event_date']);
         });
     }
 
-    public function down(): void {
+    public function down(): void
+    {
         Schema::dropIfExists('announcements');
     }
 };

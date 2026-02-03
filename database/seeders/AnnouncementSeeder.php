@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Announcement;
-use Carbon\Carbon;
 
 class AnnouncementSeeder extends Seeder
 {
@@ -47,10 +46,16 @@ class AnnouncementSeeder extends Seeder
         ];
 
         foreach ($rows as $r) {
-            Announcement::create(array_merge($r, [
-                'is_published' => true,
-                'published_at' => Carbon::now(),
-            ]));
+            Announcement::updateOrCreate(
+                [
+                    'title_id'    => $r['title_id'],
+                    'event_date'  => $r['event_date'],
+                ],
+                array_merge($r, [
+                    'is_published' => true,
+                    'published_at' => now(),
+                ])
+            );
         }
     }
 }

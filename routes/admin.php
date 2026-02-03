@@ -14,6 +14,8 @@ use App\Http\Controllers\Admin\PpdbController;
 use App\Http\Controllers\Admin\CommentAdminController;
 use App\Http\Controllers\Admin\PpdbVerificationController;
 use App\Http\Controllers\Admin\QuillImageController;
+use App\Http\Controllers\Admin\AboutSectionController;
+use App\Http\Controllers\Admin\AnnouncementController;
 
 Route::middleware(['auth', 'role:admin', 'verified'])
     ->group(function () {
@@ -73,4 +75,12 @@ Route::middleware(['auth', 'role:admin', 'verified'])
         Route::patch('/ppdb/{ppdb}/approve', [PpdbVerificationController::class, 'approve'])->name('ppdb.approve');
         Route::patch('/ppdb/{ppdb}/reject', [PpdbVerificationController::class, 'reject'])->name('ppdb.reject');
 
+        Route::get('about', [AboutSectionController::class, 'edit'])->name('about.edit');
+        Route::put('about/{aboutSection}', [AboutSectionController::class, 'update'])->name('about.update');
+
+        Route::resource('announcements', AnnouncementController::class)->except(['show']);
+        Route::patch('announcements/{announcement}/restore', [AnnouncementController::class, 'restore'])
+            ->name('announcements.restore');
+        Route::delete('announcements/{announcement}/force', [AnnouncementController::class, 'forceDestroy'])
+            ->name('announcements.forceDestroy');
     });
